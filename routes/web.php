@@ -14,5 +14,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('home');
 });
+
+
+
+Route::group(['prefix' => 'auth',
+    ], function (){
+      Auth::routes();
+    });
+
+Route::get('/check', [App\Http\Controllers\HomeController::class, 'check']);
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
