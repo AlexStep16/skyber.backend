@@ -17,3 +17,19 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::group([
+
+  'prefix' => 'auth',
+  'namespace' => 'Auth'
+
+], function ($router) {
+
+  Route::post('login', 'SignInController');
+  Route::post('logout', 'SignOutController');
+  Route::get('me', 'MeController');
+
+});
+
+Route::post('test/create', 'TaPController@createTest');
+Route::post('poll/create', 'TaPController@createPoll');
