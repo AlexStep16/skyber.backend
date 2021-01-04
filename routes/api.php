@@ -2,7 +2,6 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\RegisterController;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,6 +18,18 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/check', [App\Http\Controllers\HomeController::class, 'check']);
+Route::group([
 
-Route::post('/register', [RegisterController::class, 'index']);
+  'prefix' => 'auth',
+  'namespace' => 'Auth'
+
+], function ($router) {
+
+  Route::post('login', 'SignInController');
+  Route::post('logout', 'SignOutController');
+  Route::get('me', 'MeController');
+
+});
+
+Route::post('test/create', 'TaPController@createTest');
+Route::post('poll/create', 'TaPController@createPoll');
