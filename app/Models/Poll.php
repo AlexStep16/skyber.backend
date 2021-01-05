@@ -12,5 +12,7 @@ class Poll extends Model
     protected $fillable = [
       'name',
       'description',
+      'email',
+      'status',
     ];
 }

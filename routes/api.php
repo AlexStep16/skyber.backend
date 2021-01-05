@@ -33,3 +33,8 @@ Route::group([
 
 Route::post('test/create', 'TaPController@createTest');
 Route::post('poll/create', 'TaPController@createPoll');
+
+Route::post('register', 'RegisterController');
+
+Route::post('test/question', 'QuestionController@create');
+

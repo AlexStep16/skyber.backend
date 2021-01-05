@@ -13,6 +13,8 @@ class TaPController extends Controller
     public function createTest(Request $request) {
       $test = new Test();
       $test->name = $request->name;
+      $test->email = $request->email;
+      $test->status = $request->status;
       $test->save();
       return new TestResource(Test::findOrFail($test->id));
     }
@@ -20,6 +22,8 @@ class TaPController extends Controller
     public function createPoll(Request $request) {
       $poll = new Poll;
       $poll->name = $request->name;
+      $test->email = $request->email;
+      $test->status = $request->status;
       $poll->save();
       return new PollResource(Poll::findOrFail($poll->id));
     }

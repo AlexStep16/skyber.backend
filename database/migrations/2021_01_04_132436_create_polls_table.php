@@ -17,7 +17,9 @@ class CreatePollsTable extends Migration
             $table->id();
             $table->timestamps();
             $table->string('name');
-            $table->string('description');
+            $table->string('description')->nullable();
+            $table->string('email')->nullable();
+            $table->string('status')->nullable();
         });
     }
 
