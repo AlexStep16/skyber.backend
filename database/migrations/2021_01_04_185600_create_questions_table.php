@@ -16,8 +16,9 @@ class CreateQuestionsTable extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->bigInteger('testId');
-            $table->string('question');
+            $table->bigInteger('test_id');
+            $table->string('question')->nullable();
+            $table->json('radio_variants')->nullable();
         });
     }
 

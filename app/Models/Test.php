@@ -15,4 +15,9 @@ class Test extends Model
       'email',
       'status',
     ];
+
+    public function questions()
+    {
+      return $this->hasMany('App\Models\Question');
+    }
 }

@@ -12,5 +12,6 @@ class Question extends Model
     protected $fillable = [
       'testId',
       'question',
+      'radio_variants',
     ];
 }

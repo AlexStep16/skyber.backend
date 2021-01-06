@@ -7,12 +7,16 @@ use App\Models\Question;
 
 class QuestionController extends Controller
 {
-    public function create(Request $request) {
-      for($i = 0; $i < count($request->array); $i++) {
-        $question = new Question();
-        $question->question = $request->array[$i]['name'];
-        $question->testId = $request->array[$i]['testId'];
-        $question->save();
-      }
-    }
+  public function create(Request $request) {
+    $question = new Question();
+    $question->test_id = $request->testId;
+    $question->radio_variants = json_encode($request->radioVariant);
+    $question->question = $request->name;
+    $question->save();
+    return $question->id;
+  }
+
+  public function delete($id) {
+    Question::findOrFail($id)->delete();
+  }
 }

@@ -32,9 +32,14 @@ Route::group([
 });
 
 Route::post('test/create', 'TaPController@createTest');
+Route::post('test/save', 'TaPController@saveTest');
 Route::post('poll/create', 'TaPController@createPoll');
 
 Route::post('register', 'RegisterController');
 
 Route::post('test/question', 'QuestionController@create');
+Route::get('test/question/delete/{id}', 'QuestionController@delete');
+
+Route::get('test/{id}', 'TaPController@getTest');
+Route::get('test/questions/{id}', 'TaPController@getQuestions');
 
