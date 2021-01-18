@@ -15,11 +15,17 @@ class TestResource extends JsonResource
     public function toArray($request)
     {
       return [
-        'testId' => $this->id,
+        'id' => $this->id,
         'testName' => $this->name,
         'description' => $this->description,
         'email' => $this->email,
-        'status' => $this->status
+        'status' => $this->status,
+        'hash' => $this->hash,
+        'countSub' => $this->count_sub,
+        'imageLink' => !count($this->getMedia('testImage')) ? null : $this->getMedia('testImage')
+                                                                          ->sortByDesc('created_at')
+                                                                          ->first()
+                                                                          ->getFullUrl(),
       ];
     }
 }

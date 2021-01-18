@@ -10,13 +10,37 @@ class QuestionController extends Controller
   public function create(Request $request) {
     $question = new Question();
     $question->test_id = $request->testId;
-    $question->radio_variants = json_encode($request->radioVariant);
+    $question->variants = json_encode($request->radioVariant);
     $question->question = $request->name;
     $question->save();
     return $question->id;
   }
 
   public function delete($id) {
-    Question::findOrFail($id)->delete();
+    $question = Question::findOrFail($id);
+
+    if(count($question->getMedia('questionImage')) != 0) {
+      $mediaItems = $question->getMedia('questionImage');
+      $mediaItems[0]->delete();
+    }
+    $question->delete();
+  }
+
+  public function uploadImage(Request $request) {
+    $question = Question::findOrFail($request->id);
+
+    if ($question->addMediaFromRequest('questionImage')->toMediaCollection('questionImage')) {
+      $image = $question->getMedia('questionImage')->first()->getFullUrl();
+    } else {
+      $image = null;
+    }
+    return response()->json(compact('image'));
+  }
+
+  public function deleteImage(Request $request) {
+    $question = Question::find($request->id);
+
+    $mediaItems = $question->getMedia('questionImage');
+    $mediaItems[0]->delete();
   }
 }

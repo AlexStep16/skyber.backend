@@ -19,7 +19,10 @@ class CreatePollsTable extends Migration
             $table->string('name');
             $table->string('description')->nullable();
             $table->string('email')->nullable();
-            $table->string('status')->nullable();
+            $table->json('variants')->nullable();
+            $table->string('hash')->nullable();
+            $table->integer('count_sub')->default(0);
+            $table->string('type_variants');
         });
     }
 

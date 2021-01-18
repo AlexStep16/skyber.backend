@@ -18,7 +18,12 @@ class QuestionResource extends JsonResource
         'id' => $this->id,
         'testId' => $this->test_id,
         'question' => $this->question,
-        'radio_variants' => $this->radio_variants,
+        'variants' => $this->variants,
+        'typeAnswer' => $this->type_answer,
+        'imageLink' => !count($this->getMedia('questionImage')) ? null : $this->getMedia('questionImage')
+                                                                          ->sortByDesc('created_at')
+                                                                          ->first()
+                                                                          ->getFullUrl(),
       ];
     }
 }
