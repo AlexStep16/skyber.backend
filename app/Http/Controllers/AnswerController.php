@@ -16,6 +16,9 @@ class AnswerController extends Controller
       $answers = new Answer();
       $answers->question = $question->name;
       $answers->question_id = $question->id;
+      if(gettype($question->checked) == "array") {
+        $question->checked = json_encode($question->checked);
+      }
       $answers->checked = $question->checked;
       $answers->test_id = $request->testId;
       $answers->save();

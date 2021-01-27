@@ -30,7 +30,9 @@ class TestController extends Controller
       $questions = Test::findOrFail($id)->questions;
       foreach ($questions as $question) {
         $mediaItems = $question->getMedia('questionImage');
-        $mediaItems[0]->delete();
+        if(count($mediaItems) > 0) {
+          $mediaItems[0]->delete();
+        }
       }
 
       Test::where('id', $id)->where('email', $request->user()->email)->delete();

@@ -18,7 +18,7 @@ class AnswerResource extends JsonResource
         'id' => $this->id,
         'questionId' => $this->question_id,
         'question' => $this->question,
-        'checked' => $this->checked,
+        'checked' => json_decode($this->checked, FALSE),
         'testId' => $this->test_id,
       ];
     }
