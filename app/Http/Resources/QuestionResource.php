@@ -19,6 +19,7 @@ class QuestionResource extends JsonResource
         'testId' => $this->test_id,
         'question' => $this->question,
         'variants' => $this->variants,
+        'index' => $this->index,
         'typeAnswer' => $this->type_answer,
         'imageLink' => !count($this->getMedia('questionImage')) ? null : $this->getMedia('questionImage')
                                                                           ->sortByDesc('created_at')

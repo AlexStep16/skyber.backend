@@ -10,8 +10,9 @@ class QuestionController extends Controller
   public function create(Request $request) {
     $question = new Question();
     $question->test_id = $request->testId;
-    $question->variants = json_encode($request->radioVariant);
+    $question->variants = json_encode($request->standartVariants);
     $question->question = $request->name;
+    $question->index = $request->index;
     $question->save();
     return $question->id;
   }

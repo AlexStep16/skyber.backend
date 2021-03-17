@@ -53,6 +53,7 @@ class TestController extends Controller
         $questionWhere->question = $question->name;
         $questionWhere->type_answer = $question->typeAnswer;
         $questionWhere->variants = json_encode($question->selectedVariants);
+        $questionWhere->index = $question->index;
         $questionWhere->save();
       }
     }
