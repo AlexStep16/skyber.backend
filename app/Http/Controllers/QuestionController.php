@@ -12,6 +12,7 @@ class QuestionController extends Controller
     $question->test_id = $request->testId;
     $question->variants = json_encode($request->standartVariants);
     $question->question = $request->name;
+    $question->is_require = $request->isRequire;
     $question->index = $request->index;
     $question->save();
     return $question->id;

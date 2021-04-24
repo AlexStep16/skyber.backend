@@ -25,6 +25,8 @@ class QuestionResource extends JsonResource
                                                                           ->sortByDesc('created_at')
                                                                           ->first()
                                                                           ->getFullUrl(),
+        'answers' => '',
+        'isRequire' => $this->is_require,
       ];
     }
 }

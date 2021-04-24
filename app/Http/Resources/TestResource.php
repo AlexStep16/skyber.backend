@@ -26,6 +26,7 @@ class TestResource extends JsonResource
                                                                           ->sortByDesc('created_at')
                                                                           ->first()
                                                                           ->getFullUrl(),
+        'videoLink' => $this->video_link,
       ];
     }
 }

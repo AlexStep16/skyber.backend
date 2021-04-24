@@ -19,7 +19,7 @@ class AnswerController extends Controller
       if(gettype($question->checked) == "array") {
         $question->checked = json_encode($question->checked);
       }
-      $answers->checked = $question->checked;
+      $answers->checked = (string) $question->checked;
       $answers->test_id = $request->testId;
       $answers->save();
     }
@@ -31,11 +31,6 @@ class AnswerController extends Controller
 
   public function getAnswers(Request $request, $id) {
     $answers = Answer::where('test_id', $id)->get();
-    $answersArr = [];
-    foreach($answers as $answer) {
-      $answersArr[] = new AnswerResource($answer);
-    }
-
-    return $answersArr;
+    return AnswerResource::collection($answers);
   }
 }

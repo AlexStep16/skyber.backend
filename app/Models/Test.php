@@ -24,6 +24,6 @@ class Test extends Model implements HasMedia
 
     public function questions()
     {
-      return $this->hasMany('App\Models\Question');
+      return $this->hasMany('App\Models\Question')->orderBy('index');
     }
 }

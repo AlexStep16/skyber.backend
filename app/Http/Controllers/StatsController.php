@@ -11,12 +11,19 @@ use App\Http\Resources\PollResource;
 class StatsController extends Controller
 {
   public function getStatsByHash(Request $request, $hash) {
+    $email = $request->user() ? $request->user()->email : '';
     $test = Test::where('hash', $hash)->first();
     if($test != null) {
+      if($test->email != $email && $test->ip != $request->ip()) {
+        return response("It's Not Your", 401);
+      }
       return new TestResource($test);
     }
 
     $poll = Poll::where('hash', $hash)->first();
+    if($poll->email != $email && $poll->ip != $request->ip()) {
+      return response("It's Not Your", 401);
+    }
     return new PollResource($poll);
   }
 }

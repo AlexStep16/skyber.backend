@@ -12,22 +12,27 @@ class TestController extends Controller
 {
     public function createTest(Request $request) {
       $test = new Test();
-      $test->name = $request->name;
-      $test->email = $request->user()->email;
-      $test->status = $request->status;
+      $test->name = $request->name ?? 'Без названия';
+      $test->email = $request->user()->email ?? '';
+      $test->ip = $request->ip();
+      $test->status = $request->status ?? 'draft';
       $test->hash = sha1(uniqid($test->id, true));
       $test->save();
       return new TestResource(Test::findOrFail($test->id));
     }
 
     public function deleteTest(Request $request, $id) {
+      $email = $request->user() ? $request->user()->email : '';
       $test = Test::findOrFail($id);
+      if($test->email != $email && $test->ip != $request->ip()) {
+        return response("It's Not Your", 401);
+      }
       if(count($test->getMedia('testImage')) != 0) {
         $mediaItems = $test->getMedia('testImage');
         $mediaItems[0]->delete();
       }
 
-      $questions = Test::findOrFail($id)->questions;
+      $questions = $test->questions;
       foreach ($questions as $question) {
         $mediaItems = $question->getMedia('questionImage');
         if(count($mediaItems) > 0) {
@@ -35,13 +40,17 @@ class TestController extends Controller
         }
       }
 
-      Test::where('id', $id)->where('email', $request->user()->email)->delete();
+      $test->delete();
     }
 
     public function saveTest(Request $request) {
       $test = Test::findOrFail($request->testId);
+      if(!$request->user() && $request->ip() != $test->ip) {
+        return response("It's Not Your", 401);
+      }
       $test->name = $request->testName;
       $test->description = $request->testDescription;
+      $test->video_link = $request->videoLink;
       $test->status = 'done';
       $test->save();
       $questions = $request->questions;
@@ -52,14 +61,18 @@ class TestController extends Controller
         $questionWhere = Question::findOrFail($question->id);
         $questionWhere->question = $question->name;
         $questionWhere->type_answer = $question->typeAnswer;
+        $questionWhere->is_require = $question->isRequire;
         $questionWhere->variants = json_encode($question->selectedVariants);
         $questionWhere->index = $question->index;
         $questionWhere->save();
       }
     }
 
-    public function getTest($id) {
-      return new TestResource(Test::findOrFail($id));
+    public function getTest(Request $request, $id) {
+      $test = Test::findOrFail($id);
+      if(($request->user() && $request->user()->email == $test->email) || $request->ip() == $test->ip)
+        return new TestResource(Test::findOrFail($id));
+      else return false;
     }
 
     public function generate_code_rand() {
@@ -80,22 +93,14 @@ class TestController extends Controller
     }
 
     public function getTestAll(Request $request) {
-      $tests = Test::where('email', $request->user()->email)->get();
-      $testsArray = [];
-      foreach($tests as $test) {
-        $testsArray[] = new TestResource($test);
-      }
+      $tests = Test::where('email', $request->user()->email)->orWhere('ip', $request->ip())->orderBy('created_at')->get();
 
-      return $testsArray;
+      return TestResource::collection($tests);
     }
 
     public function getQuestions($id) {
-      $arr = array();
       $questions = Test::findOrFail($id)->questions;
-      foreach ($questions as $question) {
-        $arr[] = new QuestionResource($question);
-      }
-      return $arr;
+      return QuestionResource::collection($questions);
     }
 
     public function getQuestionsByHash($hash) {
@@ -123,5 +128,12 @@ class TestController extends Controller
 
       $mediaItems = $test->getMedia('testImage');
       $mediaItems[0]->delete();
+    }
+
+    public function checkIp(Request $request) {
+      $test = Test::find($request->test_id);
+
+      if($test != null && $test->ip === $request->ip()) return true;
+      else return false;
     }
 }
