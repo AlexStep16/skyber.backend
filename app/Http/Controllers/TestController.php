@@ -14,17 +14,17 @@ class TestController extends Controller
       $test = new Test();
       $test->name = $request->name ?? 'Без названия';
       $test->email = $request->user()->email ?? '';
-      $test->ip = $request->ip();
-      $test->status = $request->status ?? 'draft';
+      $test->ip = $request->fingerprint;
+      $test->status = 'draft';
       $test->hash = sha1(uniqid($test->id, true));
       $test->save();
       return new TestResource(Test::findOrFail($test->id));
     }
 
-    public function deleteTest(Request $request, $id) {
+    public function deleteTest(Request $request) {
       $email = $request->user() ? $request->user()->email : '';
-      $test = Test::findOrFail($id);
-      if($test->email != $email && $test->ip != $request->ip()) {
+      $test = Test::findOrFail($request->id);
+      if($test->email != $email && $test->ip != $request->fingerprint && $test->ip != null) {
         return response("It's Not Your", 401);
       }
       if(count($test->getMedia('testImage')) != 0) {
@@ -45,8 +45,8 @@ class TestController extends Controller
 
     public function saveTest(Request $request) {
       $test = Test::findOrFail($request->testId);
-      if(!$request->user() && $request->ip() != $test->ip) {
-        return response("It's Not Your", 401);
+      if(!$request->user() && $request->fingerprint != $test->ip) {
+        return response($request->fingerprint, 401);
       }
       $test->name = $request->testName;
       $test->description = $request->testDescription;
@@ -68,11 +68,12 @@ class TestController extends Controller
       }
     }
 
-    public function getTest(Request $request, $id) {
-      $test = Test::findOrFail($id);
-      if(($request->user() && $request->user()->email == $test->email) || $request->ip() == $test->ip)
-        return new TestResource(Test::findOrFail($id));
-      else return false;
+    public function getTest(Request $request) {
+      $test = Test::where('hash', $request->hash)->first();
+      if($test == null) return response('Not Found', 400);
+      if(($request->user() && $request->user()->email == $test->email) || $request->fingerprint == $test->ip)
+        return new TestResource($test);
+      else return response('Not Found', 400);
     }
 
     public function generate_code_rand() {
@@ -91,15 +92,14 @@ class TestController extends Controller
     public function getTestByHash($hash) {
       return new TestResource(Test::where('hash', $hash)->first());
     }
-
     public function getTestAll(Request $request) {
-      $tests = Test::where('email', $request->user()->email)->orWhere('ip', $request->ip())->orderBy('created_at')->get();
+      $tests = Test::where('email', $request->user()->email)->orWhere('ip', $request->fingerprint)->orderBy('created_at')->get();
 
       return TestResource::collection($tests);
     }
 
-    public function getQuestions($id) {
-      $questions = Test::findOrFail($id)->questions;
+    public function getQuestions($hash) {
+      $questions = Test::where('hash', $hash)->first()->questions;
       return QuestionResource::collection($questions);
     }
 
@@ -113,7 +113,8 @@ class TestController extends Controller
     }
 
     public function uploadImage(Request $request) {
-      $test = Test::findOrFail($request->id);
+      $test = Test::where('hash', $request->testHash)->first();
+      if($test == null) return response('Not Found', 400);
 
       if ($test->addMediaFromRequest('testImage')->toMediaCollection('testImage')) {
         $image = $test->getMedia('testImage')->first()->getFullUrl();
@@ -124,16 +125,10 @@ class TestController extends Controller
     }
 
     public function deleteImage(Request $request) {
-      $test = Test::find($request->id);
+      $test = Test::where('hash', $request->testHash)->first();
+      if($test == null) return response('Not Found', 400);
 
       $mediaItems = $test->getMedia('testImage');
       $mediaItems[0]->delete();
-    }
-
-    public function checkIp(Request $request) {
-      $test = Test::find($request->test_id);
-
-      if($test != null && $test->ip === $request->ip()) return true;
-      else return false;
     }
 }

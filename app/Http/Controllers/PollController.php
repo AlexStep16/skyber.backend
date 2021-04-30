@@ -13,8 +13,9 @@ class PollController extends Controller
     $poll = new Poll;
     $poll->name = $request->name ?? 'Без названия';
     $poll->email = $request->user()->email ?? '';
-    $poll->ip = $request->ip();
+    $poll->ip = $request->fingerprint;
     $poll->variants = json_encode($request->variants) ?? '';
+    $poll->hash = sha1(uniqid($poll->id, true));
     $poll->type_variants = 'Несколько из списка';
     $poll->save();
     return new PollResource(Poll::findOrFail($poll->id));
@@ -22,22 +23,21 @@ class PollController extends Controller
 
   public function savePoll(Request $request) {
     $poll = Poll::findOrFail($request->pollId);
-    if(!$request->user() && $request->ip() != $poll->ip) {
+    if(!$request->user() && $request->fingerprint != $poll->ip) {
       return response("It's Not Your", 401);
     }
     $poll->name = $request->pollName;
     $poll->description = $request->pollDescription;
     $poll->video_link = $request->videoLink;
     $poll->variants = json_encode($request->variants);
-    $poll->hash = sha1(uniqid($poll->id, true));
     $poll->type_variants = $request->typeVariants;
     $poll->save();
   }
 
-  public function deletePoll(Request $request, $id) {
+  public function deletePoll(Request $request) {
     $email = $request->user() ? $request->user()->email : '';
-    $poll = Poll::findOrFail($id);
-    if($poll->email != $email && $poll->ip != $request->ip()) {
+    $poll = Poll::findOrFail($request->id);
+    if($poll->email != $email && $poll->ip != $request->fingerprint) {
       return response("It's Not Your", 401);
     }
     $mediaItems = $poll->getMedia('pollImage');
@@ -46,13 +46,16 @@ class PollController extends Controller
     }
 
     $poll->delete();
-    PollAnswer::where('poll_id', $id)->delete();
+    PollAnswer::where('poll_id', $request->id)->delete();
   }
 
-  public function getPoll(Request $request, $id) {
-    $poll = Poll::findOrFail($id);
-    if(($request->user() && $request->user()->email == $poll->email) || $request->ip() == $poll->ip)
+  public function getPoll(Request $request) {
+    $poll = Poll::where('hash', $request->hash)->first();
+    if($poll == null) return response('Not Found', 400);
+    if(($request->user() && $request->user()->email == $poll->email) || $request->fingerprint == $poll->ip)
       return new PollResource($poll);
+    else
+      return response('Its Not Your', 401);
   }
 
   public function getPollByHash($hash) {
@@ -60,7 +63,7 @@ class PollController extends Controller
   }
 
   public function getPollAll(Request $request) {
-    $polls = Poll::where('email', $request->user()->email)->orWhere('ip', $request->ip())->orderBy('created_at')->get();
+    $polls = Poll::where('email', $request->user()->email)->orWhere('ip', $request->fingerprint)->orderBy('created_at')->get();
 
     return PollResource::collection($polls);
   }
@@ -83,10 +86,10 @@ class PollController extends Controller
     $mediaItems[0]->delete();
   }
 
-  public function checkIp(Request $request) {
+  /* public function checkIp(Request $request) {
     $poll = Poll::find($request->poll_id);
 
     if($poll != null && $poll->ip === $request->ip()) return true;
     else return false;
-  }
+  } */
 }

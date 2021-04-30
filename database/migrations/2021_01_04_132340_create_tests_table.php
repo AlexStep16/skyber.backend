@@ -20,7 +20,7 @@ class CreateTestsTable extends Migration
             $table->string('description')->nullable();
             $table->string('email')->nullable();
             $table->string('status')->nullable();
-            $table->string('hash')->nullable();
+            $table->string('hash');
             $table->integer('count_sub')->default(0);
         });
     }
