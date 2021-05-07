@@ -50,7 +50,7 @@ Route::get('test/questions/getByHash/{hash}', 'TestController@getQuestionsByHash
 Route::post('stats', 'StatsController@getStatsByHash');
 Route::post('test/upload', 'TestController@uploadImage');
 Route::post('test/upload/delete', 'TestController@deleteImage');
-Route::post('test/checkIp', 'TestController@checkIp');
+Route::post('test/dispatch/check', 'TestController@checkDispatch');
 
 Route::post('poll/save', 'PollController@savePoll');
 Route::post('poll/create', 'PollController@createPoll');
@@ -60,7 +60,8 @@ Route::get('polls/get/all', 'PollController@getPollAll');
 Route::get('poll/getByHash/{hash}', 'PollController@getPollByHash');
 Route::post('poll/upload', 'PollController@uploadImage');
 Route::post('poll/upload/delete', 'PollController@deleteImage');
-Route::post('poll/checkIp', 'TestController@checkIp');
+Route::post('poll/dispatch/check', 'PollController@checkDispatch');
+//Route::post('poll/checkIp', 'TestController@checkIp');
 
 Route::post('answers/send', 'AnswerController@store');
 Route::get('answer/{id}', 'AnswerController@getAnswers');

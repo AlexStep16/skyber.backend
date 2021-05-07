@@ -27,6 +27,7 @@ class TestResource extends JsonResource
                                                                           ->first()
                                                                           ->getFullUrl(),
         'videoLink' => $this->video_link,
+        'fingerprint' => $this->ip,
       ];
     }
 }

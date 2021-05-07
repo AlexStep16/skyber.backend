@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\PollResource;
 use App\Models\Poll;
 use App\Models\PollAnswer;
+use App\Models\DispatchesPoll;
 
 class PollController extends Controller
 {
@@ -63,7 +64,8 @@ class PollController extends Controller
   }
 
   public function getPollAll(Request $request) {
-    $polls = Poll::where('email', $request->user()->email)->orWhere('ip', $request->fingerprint)->orderBy('created_at')->get();
+    $email = $request->user() ? $request->user()->email : '';
+    $polls = Poll::where('email', $email)->orWhere('ip', $request->fingerprint)->orderBy('created_at')->get();
 
     return PollResource::collection($polls);
   }
@@ -84,6 +86,16 @@ class PollController extends Controller
 
     $mediaItems = $poll->getMedia('pollImage');
     $mediaItems[0]->delete();
+  }
+
+  public function checkDispatch(Request $request) {
+    $email = $request->user() ? $request->user()->email  : '';
+    $dispatche = DispatchesPoll::where('poll_id', $request->pollId)
+      ->where(function($query) use($email, $request) {
+        $query->where('fingerprint', $request->fingerprint);
+        $query->orWhere('email', $email);
+      })->first();
+    return $dispatche;
   }
 
   /* public function checkIp(Request $request) {

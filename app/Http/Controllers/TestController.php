@@ -7,6 +7,7 @@ use App\Models\Test;
 use App\Models\Question;
 use App\Http\Resources\TestResource;
 use App\Http\Resources\QuestionResource;
+use App\Models\DispatchesTest;
 
 class TestController extends Controller
 {
@@ -69,9 +70,10 @@ class TestController extends Controller
     }
 
     public function getTest(Request $request) {
+      $email = $request->user() ? $request->user()->email : '';
       $test = Test::where('hash', $request->hash)->first();
       if($test == null) return response('Not Found', 400);
-      if(($request->user() && $request->user()->email == $test->email) || $request->fingerprint == $test->ip)
+      if(($request->user() && $email == $test->email) || $request->fingerprint == $test->ip)
         return new TestResource($test);
       else return response('Not Found', 400);
     }
@@ -93,23 +95,22 @@ class TestController extends Controller
       return new TestResource(Test::where('hash', $hash)->first());
     }
     public function getTestAll(Request $request) {
-      $tests = Test::where('email', $request->user()->email)->orWhere('ip', $request->fingerprint)->orderBy('created_at')->get();
+      $email = $request->user() ? $request->user()->email  : '';
+      $tests = Test::where('email', $email)->orWhere('ip', $request->fingerprint)->orderBy('created_at')->get();
 
       return TestResource::collection($tests);
     }
 
     public function getQuestions($hash) {
-      $questions = Test::where('hash', $hash)->first()->questions;
+      $test = Test::where('hash', $hash)->first();
+      if($test != null) $questions = $test->questions;
+      else return "";
       return QuestionResource::collection($questions);
     }
 
     public function getQuestionsByHash($hash) {
-      $arr = array();
       $questions = Test::where('hash', $hash)->first()->questions;
-      foreach ($questions as $question) {
-        $arr[] = new QuestionResource($question);
-      }
-      return $arr;
+      return QuestionResource::collection($questions);
     }
 
     public function uploadImage(Request $request) {
@@ -130,5 +131,15 @@ class TestController extends Controller
 
       $mediaItems = $test->getMedia('testImage');
       $mediaItems[0]->delete();
+    }
+
+    public function checkDispatch(Request $request) {
+      $email = $request->user() ? $request->user()->email  : '';
+      $dispatche = DispatchesTest::where('test_id', $request->testId)
+        ->where(function($query) use($email, $request) {
+          $query->where('fingerprint', $request->fingerprint);
+          $query->orWhere('email', $email);
+        })->first();
+      return $dispatche;
     }
 }

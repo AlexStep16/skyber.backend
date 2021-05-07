@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\AnswerResource;
 use App\Models\Answer;
 use App\Models\Test;
+use App\Models\DispatchesTest;
 
 class AnswerController extends Controller
 {
@@ -23,7 +24,12 @@ class AnswerController extends Controller
       $answers->test_id = $request->testId;
       $answers->save();
     }
-
+    $email = $request->user() ? $request->user()->email  : '';
+    DispatchesTest::create([
+      'email' => $email,
+      'test_id' => $request->testId,
+      'fingerprint' => $request->fingerprint,
+    ]);
     $test = Test::findOrFail($request->testId);
     $test->count_sub = $test->count_sub + 1;
     $test->save();

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\PollAnswerResource;
 use App\Models\PollAnswer;
 use App\Models\Poll;
+use App\Models\DispatchesPoll;
 
 class PollAnswerController extends Controller
 {
@@ -14,6 +15,13 @@ class PollAnswerController extends Controller
     $answers->poll_id = $request->pollId;
     $answers->answers = json_encode($request->selected);
     $answers->save();
+
+    $email = $request->user() ? $request->user()->email  : '';
+    DispatchesPoll::create([
+      'email' => $email,
+      'poll_id' => $request->pollId,
+      'fingerprint' => $request->fingerprint,
+    ]);
 
     $poll = Poll::findOrFail($request->pollId);
     $poll->count_sub = $poll->count_sub + 1;
