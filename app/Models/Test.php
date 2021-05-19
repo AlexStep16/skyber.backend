@@ -22,8 +22,21 @@ class Test extends Model implements HasMedia
       'count_sub'
     ];
 
+    public static function boot() {
+      parent::boot();
+
+      static::deleting(function($user) {
+        $user->dispatches()->delete();
+        $user->scenarios()->delete();
+      });
+    }
+
     public function questions()
     {
       return $this->hasMany('App\Models\Question')->orderBy('index');
+    }
+
+    public function scenarios() {
+      return $this->hasMany('App\Models\Scenario');
     }
 }

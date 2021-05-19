@@ -14,7 +14,7 @@ class Question extends Model implements HasMedia
     use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
-      'testId',
+      'test_id',
       'question',
       'variants',
       'type_answer',

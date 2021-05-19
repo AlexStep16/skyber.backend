@@ -71,7 +71,8 @@ class PollController extends Controller
   }
 
   public function uploadImage(Request $request) {
-    $poll = Poll::findOrFail($request->id);
+    $poll = Poll::where('hash', $request->pollHash)->first();
+    if($poll == null) return response('Not Found', 400);
 
     if ($poll->addMediaFromRequest('pollImage')->toMediaCollection('pollImage')) {
       $image = $poll->getMedia('pollImage')->first()->getFullUrl();
@@ -82,7 +83,8 @@ class PollController extends Controller
   }
 
   public function deleteImage(Request $request) {
-    $poll = Poll::find($request->id);
+    $poll = Poll::where('hash', $request->pollHash)->first();
+    if($poll == null) return response('Not Found', 400);
 
     $mediaItems = $poll->getMedia('pollImage');
     $mediaItems[0]->delete();

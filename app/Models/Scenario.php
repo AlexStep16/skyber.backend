@@ -9,30 +9,26 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\File;
 
-class Poll extends Model implements HasMedia
+class Scenario extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia;
-
-    protected $fillable = [
-      'name',
-      'description',
-      'email',
-      'status',
-      'variants',
-      'hash',
-      'count_sub',
-      'type_variants'
-    ];
 
     public static function boot() {
       parent::boot();
 
       static::deleting(function($user) {
-        $user->dispatches()->delete();
+        $user->conditions()->delete();
       });
     }
 
-    public function dispatches() {
-      return $this->hasMany('App\Models\DispatchesPoll');
+    protected $fillable = [
+      'test_id',
+      'name',
+      'header',
+      'description',
+    ];
+
+    public function conditions() {
+      return $this->hasMany('App\Models\ScenarioCondition');
     }
 }

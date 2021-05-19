@@ -61,7 +61,10 @@ Route::get('poll/getByHash/{hash}', 'PollController@getPollByHash');
 Route::post('poll/upload', 'PollController@uploadImage');
 Route::post('poll/upload/delete', 'PollController@deleteImage');
 Route::post('poll/dispatch/check', 'PollController@checkDispatch');
-//Route::post('poll/checkIp', 'TestController@checkIp');
+
+Route::post('scenarios/create', 'ScenarioController@create');
+Route::get('scenarios/{testHash}', 'ScenarioController@getByTestHash');
+Route::post('scenarios/conditions/save', 'ScenarioController@saveConditions');
 
 Route::post('answers/send', 'AnswerController@store');
 Route::get('answer/{id}', 'AnswerController@getAnswers');
