@@ -36,6 +36,10 @@ class Test extends Model implements HasMedia
       return $this->hasMany('App\Models\Question')->orderBy('index');
     }
 
+    public function dispatches() {
+      return $this->hasMany('App\Models\DispatchesTest');
+    }
+
     public function scenarios() {
       return $this->hasMany('App\Models\Scenario');
     }

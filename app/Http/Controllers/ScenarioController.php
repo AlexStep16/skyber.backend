@@ -20,10 +20,10 @@ class ScenarioController extends Controller
       "header" => $scenarioData->header,
       "description" => $scenarioData->description,
     ]);
-
+    if(!$scenario->wasRecentlyCreated ) return null;
     if($scenario == null) return response('Failed', 404);
-
-    if ($scenario->addMediaFromRequest('scenaImage')->toMediaCollection('scenarioImages')) {
+    if ($scenario->scenaImage != null) {
+      $scenario->addMediaFromRequest('scenaImage')->toMediaCollection('scenarioImages');
       $image = $scenario->getMedia('scenarioImages')->first()->getFullUrl();
     } else {
       $image = null;
@@ -41,10 +41,16 @@ class ScenarioController extends Controller
 
     foreach($scenarios as $scenario) {
       foreach($scenario->conditions as $condition) {
-        if(!$condition->checked) continue;
-        $cond = new ScenarioCondition();
+        $scenarioModel = ScenarioCondition::where('scenario_id', $scenario->id)->where('condition', $condition->condition)->first();
+
+        if($scenarioModel != null && !$condition->checked) {
+          $scenarioModel->delete();
+          continue;
+        }
+        if($scenarioModel == null && !$condition->checked) continue;
+        $cond = $scenarioModel ? $scenarioModel : new ScenarioCondition();
         $cond->scores = $condition->scores;
-        $cond->condition = '';
+        $cond->condition = $condition->condition;
         $cond->scenario_id = $scenario->id;
         $cond->save();
       }
