@@ -51,6 +51,7 @@ class ScenarioController extends Controller
         $cond = $scenarioModel ? $scenarioModel : new ScenarioCondition();
         $cond->scores = $condition->scores;
         $cond->condition = $condition->condition;
+        $cond->question_id = $condition->questionId ?? null;
         $cond->scenario_id = $scenario->id;
         $cond->save();
       }
