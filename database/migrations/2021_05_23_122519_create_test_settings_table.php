@@ -20,6 +20,7 @@ class CreateTestSettingsTable extends Migration
             $table->boolean('password_access')->default(false);
             $table->boolean('is_list')->default(true);
             $table->boolean('is_right_questions')->default(false);
+            $table->boolean('is_resend')->default(false);
             $table->string('password')->nullable();
             $table->timestamps();
         });

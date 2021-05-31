@@ -14,6 +14,7 @@ class TestSetting extends Model
       'access_for_all',
       'password_access',
       'is_list',
+      'is_resend',
       'is_right_questions',
       'password',
     ];
