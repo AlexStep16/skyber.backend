@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\TestSettingResource;
 
 class TestResource extends JsonResource
 {
@@ -28,6 +29,7 @@ class TestResource extends JsonResource
                                                                           ->getFullUrl(),
         'videoLink' => $this->video_link,
         'fingerprint' => $this->ip,
+        'settings' => TestSettingResource::collection($this->settings),
       ];
     }
 }

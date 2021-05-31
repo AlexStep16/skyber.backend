@@ -7,7 +7,9 @@ use App\Models\Test;
 use App\Models\Question;
 use App\Http\Resources\TestResource;
 use App\Http\Resources\QuestionResource;
+use App\Http\Resources\TestSettingResource;
 use App\Models\DispatchesTest;
+use App\Models\TestSetting;
 
 class TestController extends Controller
 {
@@ -19,6 +21,11 @@ class TestController extends Controller
       $test->status = 'draft';
       $test->hash = sha1(uniqid($test->id, true));
       $test->save();
+
+      TestSetting::create([
+        'test_id' => $test->id,
+      ]);
+
       return new TestResource(Test::findOrFail($test->id));
     }
 
@@ -28,17 +35,11 @@ class TestController extends Controller
       if($test->email != $email && $test->ip != $request->fingerprint && $test->ip != null) {
         return response("It's Not Your", 401);
       }
-      if(count($test->getMedia('testImage')) != 0) {
-        $mediaItems = $test->getMedia('testImage');
-        $mediaItems[0]->delete();
-      }
+      $test->clearMediaCollection();
 
       $questions = $test->questions;
       foreach ($questions as $question) {
-        $mediaItems = $question->getMedia('questionImage');
-        if(count($mediaItems) > 0) {
-          $mediaItems[0]->delete();
-        }
+        $question->clearMediaCollection('questionImage');
       }
 
       $test->delete();
@@ -67,6 +68,9 @@ class TestController extends Controller
         $questionWhere->index = $question->index;
         $questionWhere->save();
       }
+
+      $settings = TestSetting::where('test_id', $request->settings['test_id'])->first();
+      $settings->fill($request->settings)->save();
     }
 
     public function getTest(Request $request) {
@@ -96,7 +100,7 @@ class TestController extends Controller
     }
     public function getTestAll(Request $request) {
       $email = $request->user() ? $request->user()->email  : '';
-      $tests = Test::where('email', $email)->orWhere('ip', $request->fingerprint)->orderBy('created_at')->get();
+      $tests = Test::where('email', $email)->orWhere('ip', $request->fingerprint)->orderByDesc('created_at')->get();
 
       return TestResource::collection($tests);
     }

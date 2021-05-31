@@ -28,6 +28,8 @@ class Test extends Model implements HasMedia
       static::deleting(function($user) {
         $user->dispatches()->delete();
         $user->scenarios()->delete();
+        $user->questions()->delete();
+        $user->settings()->delete();
       });
     }
 
@@ -41,6 +43,10 @@ class Test extends Model implements HasMedia
     }
 
     public function scenarios() {
-      return $this->hasMany('App\Models\Scenario');
+      return $this->hasMany('App\Models\Scenario')->orderBy('created_at');
+    }
+
+    public function settings() {
+      return $this->hasMany('App\Models\TestSetting');
     }
 }

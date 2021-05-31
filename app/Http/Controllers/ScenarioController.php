@@ -31,9 +31,38 @@ class ScenarioController extends Controller
     return response()->json(compact('image'));
   }
 
+  public function edit(Request $request) {
+    $scenarioData = json_decode($request->scenario, false);
+
+    $scenario = Scenario::findOrFail($scenarioData->id);
+    $scenario->update([
+      "name" => $scenarioData->name,
+      "header" => $scenarioData->header,
+      "description" => $scenarioData->description,
+    ]);
+
+    if (
+      !empty($scenarioData->image)
+      && $scenario->getMedia('scenarioImages')->count() === 0
+    ) {
+      $scenario->clearMediaCollection('images');
+      $scenario->addMediaFromRequest('scenaImage')->toMediaCollection('scenarioImages');
+    }
+  }
+
+  public function delete($id) {
+    $scenario = Scenario::findOrFail($id);
+    $scenario->clearMediaCollection();
+    $scenario->delete();
+  }
+
   public function getByTestHash($testHash) {
     $test = Test::where('hash', $testHash)->first();
     return ScenarioResource::collection($test->scenarios);
+  }
+
+  public function get($id) {
+    return new ScenarioResource(Scenario::findOrFail($id));
   }
 
   public function saveConditions(Request $request) {
@@ -51,7 +80,8 @@ class ScenarioController extends Controller
         $cond = $scenarioModel ? $scenarioModel : new ScenarioCondition();
         $cond->scores = $condition->scores;
         $cond->condition = $condition->condition;
-        $cond->question_id = $condition->questionId ?? null;
+        $cond->question_id = $condition->question->id ?? null;
+        $cond->question_name = $condition->question->question ?? null;
         $cond->scenario_id = $scenario->id;
         $cond->save();
       }

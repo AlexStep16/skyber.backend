@@ -64,7 +64,12 @@ Route::post('poll/dispatch/check', 'PollController@checkDispatch');
 
 Route::post('scenarios/create', 'ScenarioController@create');
 Route::get('scenarios/{testHash}', 'ScenarioController@getByTestHash');
+Route::get('scenario/{id}', 'ScenarioController@get');
+Route::post('scenario/edit/{id}', 'ScenarioController@edit');
+Route::delete('scenario/delete/{id}', 'ScenarioController@delete');
 Route::post('scenarios/conditions/save', 'ScenarioController@saveConditions');
+
+Route::post('settings/save', 'SettingsController@save');
 
 Route::post('answers/send', 'AnswerController@store');
 Route::get('answer/{id}', 'AnswerController@getAnswers');

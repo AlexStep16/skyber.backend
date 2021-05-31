@@ -65,7 +65,7 @@ class PollController extends Controller
 
   public function getPollAll(Request $request) {
     $email = $request->user() ? $request->user()->email : '';
-    $polls = Poll::where('email', $email)->orWhere('ip', $request->fingerprint)->orderBy('created_at')->get();
+    $polls = Poll::where('email', $email)->orWhere('ip', $request->fingerprint)->orderByDesc('created_at')->get();
 
     return PollResource::collection($polls);
   }
