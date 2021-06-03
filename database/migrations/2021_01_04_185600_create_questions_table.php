@@ -20,6 +20,7 @@ class CreateQuestionsTable extends Migration
             $table->string('question')->nullable();
             $table->json('variants')->nullable();
             $table->string('type_answer')->nullable();
+            $table->string('video_link')->nullable();
             $table->integer('index');
         });
     }

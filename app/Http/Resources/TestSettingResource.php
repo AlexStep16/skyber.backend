@@ -22,6 +22,7 @@ class TestSettingResource extends JsonResource
         'is_right_questions' => $this->is_right_questions,
         'is_resend' => $this->is_resend,
         'password_confirm' => strlen($this->password) > 0,
+        'password' => '',
       ];
     }
 }

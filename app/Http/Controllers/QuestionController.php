@@ -13,6 +13,7 @@ class QuestionController extends Controller
     $question->variants = json_encode($request->standartVariants);
     $question->question = $request->name;
     $question->is_require = $request->isRequire;
+    $question->video_link = $request->videoLink;
     $question->index = $request->index;
     $question->save();
     return $question->id;

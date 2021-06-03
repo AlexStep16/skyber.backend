@@ -28,6 +28,7 @@ class QuestionResource extends JsonResource
         'answers' => '',
         'isRequire' => $this->is_require,
         'right_variants' => json_decode($this->right_variants, false),
+        'videoLink' => $this->video_link,
       ];
     }
 }

@@ -65,6 +65,7 @@ class TestController extends Controller
         $questionWhere->question = $question->name;
         $questionWhere->type_answer = $question->typeAnswer;
         $questionWhere->is_require = $question->isRequire;
+        $questionWhere->video_link = $question->videoLink;
         $questionWhere->right_variants = json_encode($question->right_variants);
         $questionWhere->variants = json_encode($question->selectedVariants);
         $questionWhere->index = $question->index;

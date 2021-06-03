@@ -18,5 +18,6 @@ class Question extends Model implements HasMedia
       'question',
       'variants',
       'type_answer',
+      'video_link'
     ];
 }
