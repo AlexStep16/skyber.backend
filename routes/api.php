@@ -75,3 +75,5 @@ Route::post('answers/send', 'AnswerController@store');
 Route::get('answer/{id}', 'AnswerController@getAnswers');
 Route::post('pollAnswers/send', 'PollAnswerController@store');
 Route::get('pollAnswers/{id}', 'PollAnswerController@getAnswers');
+
+Route::post('password-closed', 'TestController@checkPassword');

@@ -10,6 +10,7 @@ use App\Http\Resources\QuestionResource;
 use App\Http\Resources\TestSettingResource;
 use App\Models\DispatchesTest;
 use App\Models\TestSetting;
+use Illuminate\Support\Facades\Hash;
 
 class TestController extends Controller
 {
@@ -71,7 +72,9 @@ class TestController extends Controller
       }
 
       $settings = TestSetting::where('test_id', $request->settings['test_id'])->first();
-      $settings->fill($request->settings)->save();
+      $settings->fill($request->settings);
+      $settings->password = Hash::make($request->settings['password']);
+      $settings->save();
     }
 
     public function getTest(Request $request) {
@@ -146,5 +149,14 @@ class TestController extends Controller
           $query->orWhere('email', $email);
         })->first();
       return $dispatche;
+    }
+
+    public function checkPassword(Request $request) {
+      $test = Test::where('hash', $request->test_hash)->first();
+      $settings = $test->settings->first();
+      if(Hash::check($request->password, $settings->password)) {
+        return 'verified';
+      };
+      return 'not verified';
     }
 }
