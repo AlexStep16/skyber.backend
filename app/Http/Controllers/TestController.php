@@ -73,8 +73,12 @@ class TestController extends Controller
       }
 
       $settings = TestSetting::where('test_id', $request->settings['test_id'])->first();
+      $password = $settings->password;
       $settings->fill($request->settings);
-      $settings->password = Hash::make($request->settings['password']);
+      $settings->password = $password;
+      if(strlen($request->settings['password']) > 4) {
+        $settings->password = Hash::make($request->settings['password']);
+      }
       $settings->save();
     }
 
