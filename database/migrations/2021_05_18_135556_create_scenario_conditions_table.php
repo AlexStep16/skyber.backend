@@ -18,8 +18,7 @@ class CreateScenarioConditionsTable extends Migration
             $table->unsignedBigInteger('scenario_id');
             $table->string('condition');
             $table->integer('scores')->nullable();
-            $table->string('question_id')->nullable();
-            $table->string('question_name')->nullable();
+            $table->unsignedBigInteger('question_id')->nullable();
             $table->timestamps();
         });
     }

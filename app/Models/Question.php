@@ -20,4 +20,8 @@ class Question extends Model implements HasMedia
       'type_answer',
       'video_link'
     ];
+
+    public function conditions() {
+      return $this->hasMany('App\Models\ScenarioCondition');
+    }
 }

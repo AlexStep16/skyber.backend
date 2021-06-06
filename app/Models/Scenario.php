@@ -31,4 +31,8 @@ class Scenario extends Model implements HasMedia
     public function conditions() {
       return $this->hasMany('App\Models\ScenarioCondition');
     }
+
+    public function test() {
+      return $this->belongsTo('App\Models\Test');
+    }
 }

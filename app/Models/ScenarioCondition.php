@@ -12,5 +12,11 @@ class ScenarioCondition extends Model
     protected $fillable = [
       'scenario_id',
       'condition',
+      'scores',
+      'question_id',
     ];
+
+    public function question() {
+      return $this->belongsTo('App\Models\Question');
+    }
 }

@@ -33,7 +33,6 @@ class ScenarioController extends Controller
 
   public function edit(Request $request) {
     $scenarioData = json_decode($request->scenario, false);
-
     $scenario = Scenario::findOrFail($scenarioData->id);
     $scenario->update([
       "name" => $scenarioData->name,
@@ -45,9 +44,13 @@ class ScenarioController extends Controller
       !empty($scenarioData->image)
       && $scenario->getMedia('scenarioImages')->count() === 0
     ) {
-      $scenario->clearMediaCollection('images');
+      $scenario->clearMediaCollection('scenarioImages');
       $scenario->addMediaFromRequest('scenaImage')->toMediaCollection('scenarioImages');
     }
+    else if(empty($scenarioData->image)) {
+      $scenario->clearMediaCollection('scenarioImages');
+    }
+
   }
 
   public function delete($id) {

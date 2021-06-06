@@ -23,7 +23,8 @@ class ScenarioResource extends JsonResource
                                                                           ->sortByDesc('created_at')
                                                                           ->first()
                                                                           ->getFullUrl(),
-        'conditions' => $this->conditions
+        'conditions' => ScenarioConditionResource::collection($this->conditions),
+        'testHash' => $this->test->hash,
       ];
     }
 }

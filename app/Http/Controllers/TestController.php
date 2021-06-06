@@ -59,8 +59,7 @@ class TestController extends Controller
       $questions = $request->questions;
 
       foreach($questions as $question) {
-        $question = json_encode($question);
-        $question = json_decode($question, FALSE);
+        $question = json_decode(json_encode($question), FALSE);
         $questionWhere = Question::findOrFail($question->id);
         $questionWhere->question = $question->name;
         $questionWhere->type_answer = $question->typeAnswer;
