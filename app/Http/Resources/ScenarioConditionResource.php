@@ -19,7 +19,6 @@ class ScenarioConditionResource extends JsonResource
         'condition' => $this->condition,
         'scenario_id' => $this->scenario_id,
         'scores' => $this->scores,
-        'question_id' => $this->question_id,
         'question' => $this->question ? $this->question : ''
       ];
     }
