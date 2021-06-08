@@ -17,8 +17,8 @@ class CreateAnswersTable extends Migration
             $table->id();
             $table->timestamps();
             $table->string('question_id')->nullable();
-            $table->string('question')->nullable();
-            $table->string('checked')->nullable();
+            $table->string('question', 1000)->nullable();
+            $table->text('checked')->nullable();
             $table->bigInteger('test_id');
         });
     }

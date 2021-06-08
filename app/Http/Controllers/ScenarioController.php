@@ -22,7 +22,7 @@ class ScenarioController extends Controller
     ]);
     if(!$scenario->wasRecentlyCreated ) return null;
     if($scenario == null) return response('Failed', 404);
-    if ($scenario->scenaImage != null) {
+    if ($request->scenaImage != null) {
       $scenario->addMediaFromRequest('scenaImage')->toMediaCollection('scenarioImages');
       $image = $scenario->getMedia('scenarioImages')->first()->getFullUrl();
     } else {
