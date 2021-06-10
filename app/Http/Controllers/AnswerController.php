@@ -11,6 +11,7 @@ use App\Models\DispatchesTest;
 class AnswerController extends Controller
 {
   public function store(Request $request) {
+    if(!$request->hasStatistic) return true;
     $questionsArray = json_decode(json_encode($request->questions), FALSE);
 
     foreach($questionsArray as $question) {
