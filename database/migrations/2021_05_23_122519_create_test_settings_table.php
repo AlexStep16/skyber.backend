@@ -16,7 +16,7 @@ class CreateTestSettingsTable extends Migration
         Schema::create('test_settings', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('test_id');
-            $table->boolean('access_for_all')->default(false);
+            $table->boolean('access_for_all')->default(true);
             $table->boolean('password_access')->default(false);
             $table->boolean('is_list')->default(true);
             $table->boolean('is_right_questions')->default(false);
