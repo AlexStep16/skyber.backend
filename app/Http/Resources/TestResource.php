@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\TestSettingResource;
+use App\Models\ImageOption;
 
 class TestResource extends JsonResource
 {
@@ -15,6 +16,15 @@ class TestResource extends JsonResource
      */
     public function toArray($request)
     {
+      $imageArr = [];
+      foreach($this->getMedia('testImage') as $image) {
+        $object = new \stdClass();
+        $imageOption = ImageOption::where('media_id', $image->id)->first();
+        $object->original_url = $image->getFullUrl();
+        $object->align = $imageOption->alignment;
+        $imageArr[] = $object;
+      }
+
       return [
         'id' => $this->id,
         'testName' => $this->name,
@@ -23,7 +33,7 @@ class TestResource extends JsonResource
         'status' => $this->status,
         'hash' => $this->hash,
         'countSub' => $this->count_sub,
-        'imageLink' => $this->getMedia('testImage'),
+        'imageLink' => $imageArr,
         'videoLink' => $this->video_link,
         'fingerprint' => $this->ip,
         'settings' => TestSettingResource::collection($this->settings),

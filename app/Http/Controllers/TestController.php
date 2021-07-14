@@ -10,6 +10,7 @@ use App\Http\Resources\QuestionResource;
 use App\Http\Resources\TestSettingResource;
 use App\Models\DispatchesTest;
 use App\Models\TestSetting;
+use App\Models\ImageOption;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Support\Facades\Hash;
 
@@ -133,6 +134,11 @@ class TestController extends Controller
 
       for($i = 0; $i < $request->countImages; $i++) {
         $test->addMediaFromRequest("testImage{$i}")->usingFileName(rand() . $i . '.' . $request["imageType{$i}"])->toMediaCollection('testImage');
+        $id = $test->getFirstMedia('testImage')->id;
+        $mediaOption = new ImageOption();
+        $mediaOption->alignment = 'left';
+        $mediaOption->media_id = $id;
+        $mediaOption->save();
       }
 
       return $test->getMedia('testImage');
