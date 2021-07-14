@@ -32,6 +32,7 @@ Route::group([
 });
 
 Route::post('register', 'RegisterController');
+Route::post('password/recovery', 'RegisterController@restorePassword');
 
 Route::post('test/create', 'TestController@createTest');
 Route::post('test/save', 'TestController@saveTest');
@@ -68,6 +69,7 @@ Route::get('scenario/{id}', 'ScenarioController@get');
 Route::post('scenario/edit/{id}', 'ScenarioController@edit');
 Route::delete('scenario/delete/{id}', 'ScenarioController@delete');
 Route::post('scenarios/conditions/save', 'ScenarioController@saveConditions');
+Route::post('scenarios/check/access', 'ScenarioController@isScenarioAccess');
 
 Route::post('settings/save', 'SettingsController@save');
 

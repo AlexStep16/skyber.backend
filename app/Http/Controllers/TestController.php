@@ -10,13 +10,14 @@ use App\Http\Resources\QuestionResource;
 use App\Http\Resources\TestSettingResource;
 use App\Models\DispatchesTest;
 use App\Models\TestSetting;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Support\Facades\Hash;
 
 class TestController extends Controller
 {
     public function createTest(Request $request) {
       $test = new Test();
-      $test->name = $request->name ?? 'Без названия';
+      $test->name = $request->name ?? '';
       $test->email = $request->user()->email ?? '';
       $test->ip = $request->fingerprint;
       $test->status = 'draft';
@@ -51,6 +52,7 @@ class TestController extends Controller
       if(!$request->user() && $request->fingerprint != $test->ip) {
         return response($request->fingerprint, 401);
       }
+
       $test->name = $request->testName;
       $test->description = $request->testDescription;
       $test->video_link = $request->videoLink;
@@ -129,20 +131,19 @@ class TestController extends Controller
       $test = Test::where('hash', $request->testHash)->first();
       if($test == null) return response('Not Found', 400);
 
-      if ($test->addMediaFromRequest('testImage')->toMediaCollection('testImage')) {
-        $image = $test->getMedia('testImage')->first()->getFullUrl();
-      } else {
-        $image = null;
+      for($i = 0; $i < $request->countImages; $i++) {
+        $test->addMediaFromRequest("testImage{$i}")->usingFileName(rand() . $i . '.' . $request["imageType{$i}"])->toMediaCollection('testImage');
       }
-      return response()->json(compact('image'));
+
+      return $test->getMedia('testImage');
     }
 
     public function deleteImage(Request $request) {
       $test = Test::where('hash', $request->testHash)->first();
       if($test == null) return response('Not Found', 400);
 
-      $mediaItems = $test->getMedia('testImage');
-      $mediaItems[0]->delete();
+      $id = Media::where('order_column', $request->order)->first()->id;
+      Media::find($id)->delete();
     }
 
     public function checkDispatch(Request $request) {

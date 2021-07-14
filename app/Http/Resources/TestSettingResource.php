@@ -20,6 +20,7 @@ class TestSettingResource extends JsonResource
         'password_access' => $this->password_access,
         'is_list' => $this->is_list,
         'is_right_questions' => $this->is_right_questions,
+        'is_wrong_questions' => $this->is_wrong_questions,
         'is_resend' => $this->is_resend,
         'is_reanswer' => $this->is_reanswer,
         'has_statistic' => $this->has_statistic,

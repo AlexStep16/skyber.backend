@@ -23,10 +23,7 @@ class TestResource extends JsonResource
         'status' => $this->status,
         'hash' => $this->hash,
         'countSub' => $this->count_sub,
-        'imageLink' => !count($this->getMedia('testImage')) ? null : $this->getMedia('testImage')
-                                                                          ->sortByDesc('created_at')
-                                                                          ->first()
-                                                                          ->getFullUrl(),
+        'imageLink' => $this->getMedia('testImage'),
         'videoLink' => $this->video_link,
         'fingerprint' => $this->ip,
         'settings' => TestSettingResource::collection($this->settings),

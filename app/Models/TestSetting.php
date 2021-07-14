@@ -16,6 +16,7 @@ class TestSetting extends Model
       'is_list',
       'is_resend',
       'is_right_questions',
+      'is_wrong_questions',
       'is_reanswer',
       'has_statistic',
       'password',

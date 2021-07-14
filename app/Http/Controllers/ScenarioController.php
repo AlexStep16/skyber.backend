@@ -88,4 +88,15 @@ class ScenarioController extends Controller
       }
     }
   }
+
+  public function isScenarioAccess(Request $request) {
+    $email = $request->user() ? $request->user()->email : '';
+    $test = Test::where('hash', $request->hash)->first();
+
+    if($test == null) return response('Not Found', 400);
+
+    if(($request->user() && $email == $test->email) || $request->fingerprint == $test->ip)
+      return response('Ok', 200);
+    else return response('Access denied', 401);
+  }
 }
