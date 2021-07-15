@@ -17,7 +17,7 @@ class CreateScenariosTable extends Migration
             $table->id();
             $table->unsignedBigInteger('test_id');
             $table->string('name')->nullable();
-            $table->string('header');
+            $table->string('header')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
         });

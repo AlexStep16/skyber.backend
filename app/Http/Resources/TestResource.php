@@ -20,8 +20,13 @@ class TestResource extends JsonResource
       foreach($this->getMedia('testImage') as $image) {
         $object = new \stdClass();
         $imageOption = ImageOption::where('media_id', $image->id)->first();
+
         $object->original_url = $image->getFullUrl();
-        $object->align = $imageOption->alignment;
+        $object->id = $image->id;
+        $object->align = 'left';
+        if(!is_null($imageOption)) {
+          $object->align = $imageOption->alignment;
+        }
         $imageArr[] = $object;
       }
 

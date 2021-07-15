@@ -50,6 +50,7 @@ Route::get('test/questions/{hash}', 'TestController@getQuestions');
 Route::get('test/questions/getByHash/{hash}', 'TestController@getQuestionsByHash');
 Route::post('stats', 'StatsController@getStatsByHash');
 Route::post('test/upload', 'TestController@uploadImage');
+Route::post('test/image/alignment', 'TestController@changeImageAlign');
 Route::post('test/upload/delete', 'TestController@deleteImage');
 Route::post('test/dispatch/check', 'TestController@checkDispatch');
 

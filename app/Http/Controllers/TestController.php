@@ -133,23 +133,33 @@ class TestController extends Controller
       if($test == null) return response('Not Found', 400);
 
       for($i = 0; $i < $request->countImages; $i++) {
-        $test->addMediaFromRequest("testImage{$i}")->usingFileName(rand() . $i . '.' . $request["imageType{$i}"])->toMediaCollection('testImage');
-        $id = $test->getFirstMedia('testImage')->id;
-        $mediaOption = new ImageOption();
-        $mediaOption->alignment = 'left';
-        $mediaOption->media_id = $id;
-        $mediaOption->save();
+        if (
+          $media = $test->addMediaFromRequest("testImage{$i}")
+               ->usingFileName(rand() . $i . '.' . $request["imageType{$i}"])
+               ->toMediaCollection('testImage')
+        ) {
+          $id = $media->id;
+          $mediaOption = new ImageOption();
+          $mediaOption->alignment = 'left';
+          $mediaOption->media_id = $id;
+          $mediaOption->save();
+        }
       }
 
-      return $test->getMedia('testImage');
+      return new TestResource($test);
+    }
+
+    public function changeImageAlign(Request $request) {
+      $mediaOption = ImageOption::where('media_id', $request->media_id)->first();
+      $mediaOption->alignment = $request->align;
+      $mediaOption->save();
     }
 
     public function deleteImage(Request $request) {
       $test = Test::where('hash', $request->testHash)->first();
       if($test == null) return response('Not Found', 400);
 
-      $id = Media::where('order_column', $request->order)->first()->id;
-      Media::find($id)->delete();
+      Media::findOrFail($request->id)->delete();
     }
 
     public function checkDispatch(Request $request) {

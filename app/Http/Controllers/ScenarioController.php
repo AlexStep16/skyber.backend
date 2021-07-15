@@ -14,21 +14,19 @@ class ScenarioController extends Controller
     $scenarioData = json_decode($request->scenario, false);
     $testId = Test::where('hash', $scenarioData->testHash)->first()->id;
 
-    $scenario = Scenario::firstOrCreate([
+    $scenario = Scenario::create([
       "test_id" => $testId,
-      "name" => $scenarioData->name,
-      "header" => $scenarioData->header,
-      "description" => $scenarioData->description,
+      "name" => $scenarioData->name ?? '',
+      "header" => $scenarioData->header ?? '',
+      "description" => $scenarioData->description ?? '',
     ]);
-    if(!$scenario->wasRecentlyCreated ) return null;
-    if($scenario == null) return response('Failed', 404);
     if ($request->scenaImage != null) {
       $scenario->addMediaFromRequest('scenaImage')->toMediaCollection('scenarioImages');
       $image = $scenario->getMedia('scenarioImages')->first()->getFullUrl();
     } else {
       $image = null;
     }
-    return response()->json(compact('image'));
+    return new ScenarioResource($scenario);
   }
 
   public function edit(Request $request) {
@@ -91,9 +89,18 @@ class ScenarioController extends Controller
 
   public function isScenarioAccess(Request $request) {
     $email = $request->user() ? $request->user()->email : '';
-    $test = Test::where('hash', $request->hash)->first();
+    $hash = $request->hash;
+    $scenario_id = $request->scenario_id;
+    if(!is_null($hash)) {
+      $test = Test::where('hash', $hash)->first();
+    }
+    else {
+      $scenario = Scenario::findOrFail($scenario_id);
+      if(is_null($scenario)) return response('Not Found', 400);
+      $test = Test::findOrFail($scenario->test_id);
+    }
 
-    if($test == null) return response('Not Found', 400);
+    if(empty($test)) return response('Not Found', 400);
 
     if(($request->user() && $email == $test->email) || $request->fingerprint == $test->ip)
       return response('Ok', 200);
