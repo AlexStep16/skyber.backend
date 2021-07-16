@@ -16,6 +16,8 @@ class CreateImageOptions extends Migration
         Schema::create('image_options', function (Blueprint $table) {
             $table->id();
             $table->string('alignment')->nullable();
+            $table->integer('width')->nullable();
+            $table->integer('height')->nullable();
             $table->unsignedBigInteger('media_id');
             $table->timestamps();
         });

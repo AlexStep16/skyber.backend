@@ -155,6 +155,13 @@ class TestController extends Controller
       $mediaOption->save();
     }
 
+    public function changeImageSize(Request $request) {
+      $mediaOption = ImageOption::where('media_id', $request->id)->first();
+      $mediaOption->width = $request->width;
+      $mediaOption->height = $request->height;
+      $mediaOption->save();
+    }
+
     public function deleteImage(Request $request) {
       $test = Test::where('hash', $request->testHash)->first();
       if($test == null) return response('Not Found', 400);

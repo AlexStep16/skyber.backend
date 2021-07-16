@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\Scenario;
 use App\Models\ScenarioCondition;
 use App\Models\Test;
+use App\Models\ImageOption;
 use App\Http\Resources\ScenarioResource;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
 
 class ScenarioController extends Controller
 {
@@ -20,34 +23,17 @@ class ScenarioController extends Controller
       "header" => $scenarioData->header ?? '',
       "description" => $scenarioData->description ?? '',
     ]);
-    if ($request->scenaImage != null) {
-      $scenario->addMediaFromRequest('scenaImage')->toMediaCollection('scenarioImages');
-      $image = $scenario->getMedia('scenarioImages')->first()->getFullUrl();
-    } else {
-      $image = null;
-    }
+
     return new ScenarioResource($scenario);
   }
 
   public function edit(Request $request) {
-    $scenarioData = json_decode($request->scenario, false);
-    $scenario = Scenario::findOrFail($scenarioData->id);
+    $scenario = Scenario::findOrFail($request->id);
     $scenario->update([
-      "name" => $scenarioData->name,
-      "header" => $scenarioData->header,
-      "description" => $scenarioData->description,
+      "name" => $request->name,
+      "header" => $request->header,
+      "description" => $request->description,
     ]);
-
-    if (
-      !empty($scenarioData->image)
-      && $scenario->getMedia('scenarioImages')->count() === 0
-    ) {
-      $scenario->clearMediaCollection('scenarioImages');
-      $scenario->addMediaFromRequest('scenaImage')->toMediaCollection('scenarioImages');
-    }
-    else if(empty($scenarioData->image)) {
-      $scenario->clearMediaCollection('scenarioImages');
-    }
 
   }
 
@@ -105,5 +91,39 @@ class ScenarioController extends Controller
     if(($request->user() && $email == $test->email) || $request->fingerprint == $test->ip)
       return response('Ok', 200);
     else return response('Access denied', 401);
+  }
+
+  public function uploadImage(Request $request) {
+    $scenario = Scenario::findOrFail($request->scenarioId);
+    if($scenario == null) return response('Not Found', 400);
+
+    for($i = 0; $i < $request->countImages; $i++) {
+      if (
+        $media = $scenario->addMediaFromRequest("scenarioImage{$i}")
+             ->usingFileName(rand() . $i . '.' . $request["imageType{$i}"])
+             ->toMediaCollection('scenarioImage')
+      ) {
+        $id = $media->id;
+        $mediaOption = new ImageOption();
+        $mediaOption->alignment = 'left';
+        $mediaOption->media_id = $id;
+        $mediaOption->save();
+      }
+    }
+
+    return new ScenarioResource($scenario);
+  }
+
+  public function deleteImage(Request $request) {
+    $scenario = Scenario::findOrFail($request->scenarioId);
+    if($scenario == null) return response('Not Found', 400);
+
+    Media::findOrFail($request->id)->delete();
+  }
+
+  public function changeImageAlign(Request $request) {
+    $mediaOption = ImageOption::where('media_id', $request->media_id)->first();
+    $mediaOption->alignment = $request->align;
+    $mediaOption->save();
   }
 }

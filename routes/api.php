@@ -51,6 +51,7 @@ Route::get('test/questions/getByHash/{hash}', 'TestController@getQuestionsByHash
 Route::post('stats', 'StatsController@getStatsByHash');
 Route::post('test/upload', 'TestController@uploadImage');
 Route::post('test/image/alignment', 'TestController@changeImageAlign');
+Route::post('test/image/size', 'TestController@changeImageSize');
 Route::post('test/upload/delete', 'TestController@deleteImage');
 Route::post('test/dispatch/check', 'TestController@checkDispatch');
 
@@ -68,6 +69,9 @@ Route::post('scenarios/create', 'ScenarioController@create');
 Route::get('scenarios/{testHash}', 'ScenarioController@getByTestHash');
 Route::get('scenario/{id}', 'ScenarioController@get');
 Route::post('scenario/edit/{id}', 'ScenarioController@edit');
+Route::post('scenario/upload', 'ScenarioController@uploadImage');
+Route::post('scenario/upload/delete', 'ScenarioController@deleteImage');
+Route::post('scenario/image/alignment', 'ScenarioController@changeImageAlign');
 Route::delete('scenario/delete/{id}', 'ScenarioController@delete');
 Route::post('scenarios/conditions/save', 'ScenarioController@saveConditions');
 Route::post('scenarios/check/access', 'ScenarioController@isScenarioAccess');

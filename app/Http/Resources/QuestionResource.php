@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\ImageOption;
 
 class QuestionResource extends JsonResource
 {
@@ -14,6 +15,20 @@ class QuestionResource extends JsonResource
      */
     public function toArray($request)
     {
+      $imageArr = [];
+      foreach($this->getMedia('questionImage') as $image) {
+        $object = new \stdClass();
+        $imageOption = ImageOption::where('media_id', $image->id)->first();
+
+        $object->original_url = $image->getFullUrl();
+        $object->id = $image->id;
+        $object->align = 'left';
+        if(!is_null($imageOption)) {
+          $object->align = $imageOption->alignment;
+        }
+        $imageArr[] = $object;
+      }
+
       return [
         'id' => $this->id,
         'testId' => $this->test_id,
@@ -21,10 +36,7 @@ class QuestionResource extends JsonResource
         'variants' => $this->variants,
         'index' => $this->index,
         'typeAnswer' => $this->type_answer,
-        'imageLink' => !count($this->getMedia('questionImage')) ? null : $this->getMedia('questionImage')
-                                                                          ->sortByDesc('created_at')
-                                                                          ->first()
-                                                                          ->getFullUrl(),
+        'images' => $imageArr,
         'answers' => '',
         'isRequire' => $this->is_require,
         'right_variants' => json_decode($this->right_variants, false),
