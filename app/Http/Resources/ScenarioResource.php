@@ -24,6 +24,8 @@ class ScenarioResource extends JsonResource
         $object->id = $image->id;
         $object->align = 'left';
         if(!is_null($imageOption)) {
+          $object->width = $imageOption->width;
+          $object->height = $imageOption->height;
           $object->align = $imageOption->alignment;
         }
         $imageArr[] = $object;

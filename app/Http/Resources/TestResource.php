@@ -24,9 +24,9 @@ class TestResource extends JsonResource
         $object->original_url = $image->getFullUrl();
         $object->id = $image->id;
         $object->align = 'left';
-        $object->width = $imageOption->width;
-        $object->height = $imageOption->height;
         if(!is_null($imageOption)) {
+          $object->width = $imageOption->width;
+          $object->height = $imageOption->height;
           $object->align = $imageOption->alignment;
         }
         $imageArr[] = $object;
