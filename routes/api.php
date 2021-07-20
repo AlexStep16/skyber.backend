@@ -33,6 +33,7 @@ Route::group([
 
 Route::post('register', 'RegisterController');
 Route::post('password/recovery', 'RegisterController@restorePassword');
+Route::post('password/change', 'RegisterController@changePassword');
 
 Route::post('test/create', 'TestController@createTest');
 Route::post('test/save', 'TestController@saveTest');

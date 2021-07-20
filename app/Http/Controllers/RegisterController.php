@@ -17,6 +17,7 @@ class RegisterController extends Controller
       $user = new User;
       $user->email = $request->email;
       $user->password = Hash::make($request->password);
+      $user->hash = md5($user->email . $user->id);
       $user->save();
     }
 
@@ -28,5 +29,15 @@ class RegisterController extends Controller
       else {
         return response('Fail', 404);
       }
+    }
+
+    public function changePassword(Request $request) {
+      $model = User::where('hash', $request->hash)->first();
+      if($model === null) {
+        return response('Fail', 404);
+      }
+
+      $model->password = Hash::make($request->password);
+      $model->save();
     }
 }
