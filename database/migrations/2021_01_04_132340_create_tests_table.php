@@ -17,7 +17,7 @@ class CreateTestsTable extends Migration
             $table->id();
             $table->timestamps();
             $table->string('name')->nullable();
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->string('email')->nullable();
             $table->string('status')->nullable();
             $table->string('hash');

@@ -47,7 +47,7 @@ Route::post('test/question/upload/delete', 'QuestionController@deleteImage');
 Route::post('test', 'TestController@getTest');
 Route::post('test/get/all', 'TestController@getTestAll');
 Route::get('test/getByHash/{hash}', 'TestController@getTestByHash');
-Route::get('test/questions/{hash}', 'TestController@getQuestions');
+Route::post('test/questions', 'TestController@getQuestions');
 Route::get('test/questions/getByHash/{hash}', 'TestController@getQuestionsByHash');
 Route::post('stats', 'StatsController@getStatsByHash');
 Route::post('test/upload', 'TestController@uploadImage');

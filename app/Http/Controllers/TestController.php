@@ -18,8 +18,8 @@ class TestController extends Controller
 {
     public function createTest(Request $request) {
       $test = new Test();
-      $test->name = $request->name ?? '';
-      $test->email = $request->user()->email ?? '';
+      $test->name = $request->name ?? null;
+      $test->email = $request->user()->email ?? null;
       $test->ip = $request->fingerprint;
       $test->status = 'draft';
       $test->hash = sha1(uniqid($test->id, true));
@@ -49,9 +49,9 @@ class TestController extends Controller
     }
 
     public function saveTest(Request $request) {
-      $test = Test::findOrFail($request->testId);
-      if(!$request->user() && $request->fingerprint != $test->ip) {
-        return response($request->fingerprint, 401);
+      $test = Test::where('hash', $request->testHash)->first();
+      if(!$request->user() && $request->fingerprint !== $test->ip) {
+        return response('Not identified', 401);
       }
 
       $test->name = $request->testName;
@@ -78,7 +78,7 @@ class TestController extends Controller
       $password = $settings->password;
       $settings->fill($request->settings);
       $settings->password = $password;
-      if(strlen($request->settings['password']) > 4) {
+      if(strlen($request->settings['password']) > 0) {
         $settings->password = Hash::make($request->settings['password']);
       }
       $settings->save();
@@ -88,9 +88,9 @@ class TestController extends Controller
       $email = $request->user() ? $request->user()->email : '';
       $test = Test::where('hash', $request->hash)->first();
       if($test == null) return response('Not Found', 400);
-      if(($request->user() && $email == $test->email) || $request->fingerprint == $test->ip)
+      if(($request->user() && $email == $test->email) || $request->fingerprint === $test->ip)
         return new TestResource($test);
-      else return response('Not Found', 400);
+      else return response('Not identified', 401);
     }
 
     public function generate_code_rand() {
@@ -116,11 +116,16 @@ class TestController extends Controller
       return TestResource::collection($tests);
     }
 
-    public function getQuestions($hash) {
-      $test = Test::where('hash', $hash)->first();
+    public function getQuestions(Request $request) {
+      $test = Test::where('hash', $request->hash)->first();
+      $email = $request->user() ? $request->user()->email : '';
+
       if($test != null) $questions = $test->questions;
       else return "";
-      return QuestionResource::collection($questions);
+
+      if(($request->user() && $email == $test->email) || $request->fingerprint == $test->ip)
+        return QuestionResource::collection($questions);
+      else return response('Not identified', 401);
     }
 
     public function getQuestionsByHash($hash) {
@@ -171,7 +176,8 @@ class TestController extends Controller
 
     public function checkDispatch(Request $request) {
       $email = $request->user() ? $request->user()->email  : '';
-      $dispatche = DispatchesTest::where('test_id', $request->testId)
+      $test = Test::where('hash', $request->hash)->first();
+      $dispatche = DispatchesTest::where('test_id', $test->id)
         ->where(function($query) use($email, $request) {
           $query->where('fingerprint', $request->fingerprint);
           $query->orWhere('email', $email);
