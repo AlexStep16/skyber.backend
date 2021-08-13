@@ -88,7 +88,8 @@ class TestController extends Controller
       $email = $request->user() ? $request->user()->email : '';
       $test = Test::where('hash', $request->hash)->first();
       if($test == null) return response('Not Found', 400);
-      if(($request->user() && $email == $test->email) || $request->fingerprint === $test->ip)
+
+      if($email === $test->email || $request->fingerprint === $test->ip)
         return new TestResource($test);
       else return response('Not identified', 401);
     }
@@ -110,7 +111,7 @@ class TestController extends Controller
       return new TestResource(Test::where('hash', $hash)->first());
     }
     public function getTestAll(Request $request) {
-      $email = $request->user() ? $request->user()->email  : '';
+      $email = $request->user() ? $request->user()->email  : 'undefined';
       $tests = Test::where('email', $email)->orWhere('ip', $request->fingerprint)->orderByDesc('created_at')->get();
 
       return TestResource::collection($tests);
@@ -123,7 +124,7 @@ class TestController extends Controller
       if($test != null) $questions = $test->questions;
       else return "";
 
-      if(($request->user() && $email == $test->email) || $request->fingerprint == $test->ip)
+      if($email === $test->email || $request->fingerprint === $test->ip)
         return QuestionResource::collection($questions);
       else return response('Not identified', 401);
     }

@@ -17,7 +17,7 @@ class CreateQuestionsTable extends Migration
             $table->id();
             $table->timestamps();
             $table->bigInteger('test_id');
-            $table->string('question')->nullable();
+            $table->string('question', 301)->nullable();
             $table->json('variants')->nullable();
             $table->string('type_answer')->nullable();
             $table->string('video_link')->nullable();
