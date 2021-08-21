@@ -142,7 +142,10 @@ class TestController extends Controller
         if (
           $media = $test->addMediaFromRequest("testImage{$i}")
                ->usingFileName(rand() . $i . '.' . $request["imageType{$i}"])
-               ->toMediaCollection('testImage')
+->addCustomHeaders([
+            'ACL' => 'public-read'
+        ])
+->toMediaCollection('testImage', 's3')
         ) {
           $id = $media->id;
           $mediaOption = new ImageOption();
