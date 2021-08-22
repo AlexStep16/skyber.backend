@@ -33,21 +33,15 @@ class RegisterController extends Controller
         $tokenModel = Token::where('email', $request->email)->first();
         if(!is_null($tokenModel)) {
           if($tokenModel->wasActivated === false) {
-            $token = $tokenModel->token;
-          }
-          else {
-            $token = Token::create(['token' => $hash, 'email' => $request->email, 'wasActivated' => false]);
+            $hash = $tokenModel->token;
           }
         }
         else {
           $token = Token::create(['token' => $hash, 'email' => $request->email, 'wasActivated' => false]);
         }
-        if($token) {
+        if(!is_null($tokenModel) || !is_null($token)) {
           Mail::to($request->email)->send(new RecoveryPasswordMail($hash));
           return response('Success', 200);
-        }
-        else {
-          return response('Fail', 500);
         }
       }
       else {
