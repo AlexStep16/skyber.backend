@@ -29,7 +29,7 @@ class RegisterController extends Controller
       $model = User::where('email', $request->email)->first();
       if($model !== null) {
         $timestamp = Carbon::now()->timestamp;
-        $hash = Hash::make($request->email . $timestamp);
+        $hash = md5(Hash::make($request->email . $timestamp));
         $tokenModel = Token::where('email', $request->email)->first();
         if(!is_null($tokenModel)) {
           if($tokenModel->wasActivated === false) {
@@ -51,14 +51,18 @@ class RegisterController extends Controller
 
     public function changePassword(Request $request) {
       $tokenModel = Token::where('token', $request->hash)->first();
-      if(!is_null($tokenModel)) $email = $tokenModel->email;
-      else $email = null;
-      $model = User::where('email', $email)->first();
-      if($model === null) {
-        return response("Fail $tokenModel", 500);
-      }
+      if(!is_null($tokenModel) && !$tokenModel->wasActivated){
+        $email = $tokenModel->email;
+        $model = User::where('email', $email)->first();
+        if($model === null) {
+          return response("Fail $tokenModel", 500);
+        }
 
-      $model->password = Hash::make($request->password);
-      $model->save();
+        $tokenModel->wasActivated = true;
+        $tokenModel->save();
+
+        $model->password = Hash::make($request->password);
+        $model->save();
+      }
     }
 }
