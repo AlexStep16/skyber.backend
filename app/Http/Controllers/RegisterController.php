@@ -30,7 +30,7 @@ class RegisterController extends Controller
       if($model !== null) {
         $timestamp = Carbon::now()->timestamp;
         $hash = md5(Hash::make($request->email . $timestamp));
-        $tokenModel = Token::where('email', $request->email)->first();
+        $tokenModel = Token::where('email', $request->email)->where('wasActivated', false)->first();
         if(!is_null($tokenModel)) {
           if($tokenModel->wasActivated === false) {
             $hash = $tokenModel->token;
