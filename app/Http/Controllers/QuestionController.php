@@ -40,7 +40,10 @@ class QuestionController extends Controller
       if (
         $media = $question->addMediaFromRequest("questionImage{$i}")
               ->usingFileName(rand() . $i . '.' . $request["imageType{$i}"])
-              ->toMediaCollection('questionImage')
+              ->addCustomHeaders([
+                 'ACL' => 'public-read'
+              ])
+              ->toMediaCollection('questionImage', 's3')
       ) {
         $id = $media->id;
         $mediaOption = new ImageOption();

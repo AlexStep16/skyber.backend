@@ -101,7 +101,10 @@ class ScenarioController extends Controller
       if (
         $media = $scenario->addMediaFromRequest("scenarioImage{$i}")
              ->usingFileName(rand() . $i . '.' . $request["imageType{$i}"])
-             ->toMediaCollection('scenarioImage')
+             ->addCustomHeaders([
+               'ACL' => 'public-read'
+             ])
+             ->toMediaCollection('scenarioImage', 's3')
       ) {
         $id = $media->id;
         $mediaOption = new ImageOption();
