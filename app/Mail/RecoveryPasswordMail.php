@@ -30,6 +30,6 @@ class RecoveryPasswordMail extends Mailable
      */
     public function build()
     {
-        return $this->view('recovery-password');
+        return $this->subject('Восстановление пароля - Skyber.ru')->view('recovery-password');
     }
 }
