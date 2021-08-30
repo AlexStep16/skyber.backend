@@ -14,11 +14,14 @@ class AnswerController extends Controller
     $test = Test::where('hash', $request->hash)->first();
 
     $email = $request->user() ? $request->user()->email : null;
-    DispatchesTest::create([
-      'email' => $email,
-      'test_id' => $test->id,
-      'fingerprint' => $request->fingerprint,
-    ]);
+    if($test->email != $email && $test->ip != $request->fingerprint && $test->ip != null) {
+      DispatchesTest::create([
+        'email' => $email,
+        'test_id' => $test->id,
+        'fingerprint' => $request->fingerprint,
+      ]);
+    }
+
     $test->count_sub = $test->count_sub + 1;
     $test->save();
 

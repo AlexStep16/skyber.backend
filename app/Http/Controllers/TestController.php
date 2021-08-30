@@ -108,7 +108,9 @@ class TestController extends Controller
     }
 
     public function getTestByHash($hash) {
-      return new TestResource(Test::where('hash', $hash)->first());
+      $test = Test::where('hash', $hash)->first();
+      if(!is_null($test)) return new TestResource(Test::where('hash', $hash)->first());
+      return response('Not Found', 404);
     }
     public function getTestAll(Request $request) {
       $email = $request->user() ? $request->user()->email  : 'undefined';
@@ -130,6 +132,8 @@ class TestController extends Controller
     }
 
     public function getQuestionsByHash($hash) {
+      $test = Test::where('hash', $hash)->first();
+      if(is_null($test)) return response('Not Found', 400);
       $questions = Test::where('hash', $hash)->first()->questions;
       return QuestionResource::collection($questions);
     }
@@ -181,6 +185,7 @@ class TestController extends Controller
     public function checkDispatch(Request $request) {
       $email = $request->user() ? $request->user()->email  : '';
       $test = Test::where('hash', $request->hash)->first();
+      if(is_null($test)) return response('Not Found', 404);
       $dispatche = DispatchesTest::where('test_id', $test->id)
         ->where(function($query) use($email, $request) {
           $query->where('fingerprint', $request->fingerprint);
