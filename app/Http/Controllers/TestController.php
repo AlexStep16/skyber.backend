@@ -107,6 +107,9 @@ class TestController extends Controller
       return $short;
     }
 
+    public function getTestByHash($hash) {
+      return new TestResource(Test::where('hash', $hash)->first());
+    }
     public function getTestAll(Request $request) {
       $email = $request->user() ? $request->user()->email  : 'undefined';
       $tests = Test::where('email', $email)->orWhere('ip', $request->fingerprint)->orderByDesc('created_at')->get();
@@ -124,6 +127,11 @@ class TestController extends Controller
       if($email === $test->email || $request->fingerprint === $test->ip)
         return QuestionResource::collection($questions);
       else return response('Not identified', 401);
+    }
+
+    public function getQuestionsByHash($hash) {
+      $questions = Test::where('hash', $hash)->first()->questions;
+      return QuestionResource::collection($questions);
     }
 
     public function uploadImage(Request $request) {
