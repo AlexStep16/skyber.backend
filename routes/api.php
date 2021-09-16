@@ -49,7 +49,6 @@ Route::post('test/get/all', 'TestController@getTestAll');
 Route::get('test/getByHash/{hash}', 'TestController@getTestByHash');
 Route::post('test/questions', 'TestController@getQuestions');
 Route::get('test/questions/getByHash/{hash}', 'TestController@getQuestionsByHash');
-Route::post('stats', 'StatsController@getStatsByHash');
 Route::post('test/upload', 'TestController@uploadImage');
 Route::post('test/image/alignment', 'TestController@changeImageAlign');
 Route::post('test/image/size', 'TestController@changeImageSize');

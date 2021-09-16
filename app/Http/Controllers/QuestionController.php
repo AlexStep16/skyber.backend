@@ -6,19 +6,17 @@ use Illuminate\Http\Request;
 use App\Models\Question;
 use App\Http\Resources\QuestionResource;
 use App\Models\ImageOption;
+use App\Services\Questions\QuestionModel;
 
 class QuestionController extends Controller
 {
+  public function __construct(QuestionModel $questionModel)
+  {
+    $this->questionModel = $questionModel;
+  }
+
   public function create(Request $request) {
-    $question = new Question();
-    $question->test_id = $request->testId;
-    $question->variants = json_encode($request->standartVariants);
-    $question->question = $request->name;
-    $question->is_require = $request->isRequire;
-    $question->video_link = $request->videoLink;
-    $question->index = $request->index;
-    $question->save();
-    return $question->id;
+    return $this->questionModel->create($request);
   }
 
   public function delete($id) {
@@ -33,25 +31,9 @@ class QuestionController extends Controller
 
   public function uploadImage(Request $request) {
     $question = Question::findOrFail($request->id);
+    if(is_null($question)) return response('Not Found', 400);
 
-    if($question == null) return response('Not Found', 400);
-
-    for($i = 0; $i < $request->countImages; $i++) {
-      if (
-        $media = $question->addMediaFromRequest("questionImage{$i}")
-              ->usingFileName(rand() . $i . '.' . $request["imageType{$i}"])
-              ->addCustomHeaders([
-                 'ACL' => 'public-read'
-              ])
-              ->toMediaCollection('questionImage', 's3')
-      ) {
-        $id = $media->id;
-        $mediaOption = new ImageOption();
-        $mediaOption->alignment = 'left';
-        $mediaOption->media_id = $id;
-        $mediaOption->save();
-      }
-    }
+    $this->questionModel->addMediaToQuestion($request);
 
     return new QuestionResource($question);
   }
