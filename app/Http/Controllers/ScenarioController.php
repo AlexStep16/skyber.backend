@@ -23,13 +23,25 @@ use App\Http\Requests\Scenarios\{
 
 class ScenarioController extends Controller
 {
+  /**
+   * Undocumented function
+   *
+   * @param TestModel $testModel
+   * @param ScenarioModel $scenarioModel
+   */
   public function __construct(TestModel $testModel, ScenarioModel $scenarioModel)
   {
     $this->testModel = $testModel;
     $this->scenarioModel = $scenarioModel;
   }
 
-  public function create(ScenarioCreateRequest $request)
+  /**
+   * Undocumented function
+   *
+   * @param ScenarioCreateRequest $request
+   * @return ScenarioResource
+   */
+  public function create(ScenarioCreateRequest $request): ScenarioResource
   {
     $validatedRequest = $request->validated();
 
@@ -45,6 +57,12 @@ class ScenarioController extends Controller
     return new ScenarioResource($scenario);
   }
 
+  /**
+   * Undocumented function
+   *
+   * @param ScenarioEditRequest $request
+   * @return void
+   */
   public function edit(ScenarioEditRequest $request)
   {
     $validatedRequest = $request->validated();
@@ -54,7 +72,13 @@ class ScenarioController extends Controller
     $this->scenarioModel->update($validatedRequest, $scenario);
   }
 
-  public function delete($id)
+  /**
+   * Undocumented function
+   *
+   * @param Int $id
+   * @return void
+   */
+  public function delete(Int $id)
   {
     $scenario = Scenario::findOrFail($id);
 
@@ -62,7 +86,13 @@ class ScenarioController extends Controller
     $scenario->delete();
   }
 
-  public function getByTestHash($testHash)
+  /**
+   * Undocumented function
+   *
+   * @param String $testHash
+   * @return ScenarioResource
+   */
+  public function getByTestHash(String $testHash): ScenarioResource
   {
     $test = Test::where('hash', $testHash)->first();
 
@@ -71,11 +101,23 @@ class ScenarioController extends Controller
     return ScenarioResource::collection($test->scenarios);
   }
 
-  public function get($id)
+  /**
+   * Undocumented function
+   *
+   * @param Int $id
+   * @return ScenarioResource
+   */
+  public function get(Int $id): ScenarioResource
   {
     return new ScenarioResource(Scenario::find($id));
   }
 
+  /**
+   * Undocumented function
+   *
+   * @param ScenarioSaveConditionsRequest $request
+   * @return void
+   */
   public function saveConditions(ScenarioSaveConditionsRequest $request)
   {
     $validatedRequest = $request->validated();
@@ -83,6 +125,12 @@ class ScenarioController extends Controller
     $this->scenarioModel->saveConditions($validatedRequest);
   }
 
+  /**
+   * Undocumented function
+   *
+   * @param ScenarioIsAccessRequest $request
+   * @return boolean
+   */
   public function isScenarioAccess(ScenarioIsAccessRequest $request)
   {
     $validatedRequest = $request->validated();
@@ -98,7 +146,13 @@ class ScenarioController extends Controller
     return response('Ok', 200);
   }
 
-  public function uploadImage(Request $request)
+  /**
+   * Undocumented function
+   *
+   * @param Request $request
+   * @return ScenarioResource
+   */
+  public function uploadImage(Request $request): ScenarioResource
   {
     $scenario = Scenario::findOrFail($request->scenarioId);
     if (is_null($scenario)) return response('Not Found', 400);
@@ -108,6 +162,12 @@ class ScenarioController extends Controller
     return new ScenarioResource($scenario);
   }
 
+  /**
+   * Undocumented function
+   *
+   * @param ScenarioDeleteImageRequest $request
+   * @return void
+   */
   public function deleteImage(ScenarioDeleteImageRequest $request)
   {
     $validatedRequest = $request->validated();
@@ -118,6 +178,12 @@ class ScenarioController extends Controller
     Media::findOrFail($validatedRequest['id'])->delete();
   }
 
+  /**
+   * Undocumented function
+   *
+   * @param ScenarioChangeImageAlignRequest $request
+   * @return void
+   */
   public function changeImageAlign(ScenarioChangeImageAlignRequest $request)
   {
     $validatedRequest = $request->validated();

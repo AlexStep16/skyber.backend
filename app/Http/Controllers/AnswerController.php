@@ -17,12 +17,24 @@ use App\Http\Requests\Answers\AnswerStoreRequest;
 
 class AnswerController extends Controller
 {
+  /**
+   * Undocumented function
+   *
+   * @param TestModel $testModel
+   * @param AnswerModel $answerModel
+   */
   public function __construct(TestModel $testModel,AnswerModel $answerModel)
   {
     $this->testModel = $testModel;
     $this->answerModel = $answerModel;
   }
 
+  /**
+   * Undocumented function
+   *
+   * @param AnswerStoreRequest $request
+   * @return void
+   */
   public function store(AnswerStoreRequest $request)
   {
     $validatedRequest = $request->validated();
@@ -38,7 +50,14 @@ class AnswerController extends Controller
     $this->answerModel->store($validatedRequest, $test);
   }
 
-  public function getAnswers(Request $request, $id)
+  /**
+   * Undocumented function
+   *
+   * @param Request $request
+   * @param Int $id
+   * @return AnswerResource
+   */
+  public function getAnswers(Request $request, Int $id): AnswerResource
   {
     $answers = Answer::where('test_id', $id)->get();
 

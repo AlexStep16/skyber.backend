@@ -15,11 +15,22 @@ use App\Http\Requests\Register\{
 
 class RegisterController extends Controller
 {
+  /**
+   * Undocumented function
+   *
+   * @param RegisterModel $registerModel
+   */
   public function __construct(RegisterModel $registerModel)
   {
     $this->registerModel = $registerModel;
   }
 
+  /**
+   * Undocumented function
+   *
+   * @param RegisterInvokeRequest $request
+   * @return void
+   */
   public function __invoke(RegisterInvokeRequest $request)
   {
     $validatedRequest = $request->validated();
@@ -30,6 +41,12 @@ class RegisterController extends Controller
     $this->registerModel->register($validatedRequest);
   }
 
+  /**
+   * Undocumented function
+   *
+   * @param RegisterRestorePasswordRequest $request
+   * @return void
+   */
   public function restorePassword(RegisterRestorePasswordRequest $request)
   {
     $validatedRequest = $request->validated();
@@ -42,6 +59,12 @@ class RegisterController extends Controller
     }
   }
 
+  /**
+   * Undocumented function
+   *
+   * @param RegisterChangePasswordRequest $request
+   * @return void
+   */
   public function changePassword(RegisterChangePasswordRequest $request)
   {
     $validatedRequest = $request->validated();

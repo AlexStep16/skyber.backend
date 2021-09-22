@@ -15,18 +15,35 @@ use App\Http\Requests\Questions\{QuestionCreateRequest, QuestionDeleteImageReque
 
 class QuestionController extends Controller
 {
+  /**
+   * Undocumented function
+   *
+   * @param QuestionModel $questionModel
+   */
   public function __construct(QuestionModel $questionModel)
   {
     $this->questionModel = $questionModel;
   }
 
-  public function create(QuestionCreateRequest $request) {
+  /**
+   * Undocumented function
+   *
+   * @param QuestionCreateRequest $request
+   * @return Int
+   */
+  public function create(QuestionCreateRequest $request): Int {
     $validatedRequest = $request->validated();
 
     return $this->questionModel->create($validatedRequest);
   }
 
-  public function delete($id)
+  /**
+   * Undocumented function
+   *
+   * @param Int $id
+   * @return void
+   */
+  public function delete(Int $id)
   {
     $question = Question::findOrFail($id);
 
@@ -38,7 +55,13 @@ class QuestionController extends Controller
     $question->delete();
   }
 
-  public function uploadImage(Request $request)
+  /**
+   * Undocumented function
+   *
+   * @param Request $request
+   * @return QuestionResource
+   */
+  public function uploadImage(Request $request): QuestionResource
   {
     $question = Question::findOrFail($request['id']);
 
@@ -49,6 +72,12 @@ class QuestionController extends Controller
     return new QuestionResource($question);
   }
 
+  /**
+   * Undocumented function
+   *
+   * @param QuestionDeleteImageRequest $request
+   * @return void
+   */
   public function deleteImage(QuestionDeleteImageRequest $request)
   {
     $validatedRequest = $request->validated();

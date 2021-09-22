@@ -28,11 +28,22 @@ use App\Http\Requests\Tests\{
 
 class TestController extends Controller
 {
+    /**
+     * Undocumented function
+     *
+     * @param TestModel $testModel
+     */
     public function __construct(TestModel $testModel)
     {
       $this->testModel = $testModel;
     }
 
+    /**
+     * Create test with settings
+     *
+     * @param TestCreateRequest $request
+     * @return TestResource
+     */
     public function createTest(TestCreateRequest $request): TestResource
     {
       $validatedRequest = $request->validated();
@@ -40,6 +51,12 @@ class TestController extends Controller
       return new TestResource($this->testModel->createTest($validatedRequest));
     }
 
+    /**
+     * Delete test with clearing media collections
+     *
+     * @param TestDeleteRequest $request
+     * @return void
+     */
     public function deleteTest(TestDeleteRequest $request)
     {
       $validatedRequest = $request->validated();
@@ -50,6 +67,12 @@ class TestController extends Controller
       $this->testModel->deleteTest($validatedRequest);
     }
 
+    /**
+     * Save test
+     *
+     * @param TestSaveRequest $request
+     * @return void
+     */
     public function saveTest(TestSaveRequest $request)
     {
       $validatedRequest = $request->validated();
@@ -63,7 +86,13 @@ class TestController extends Controller
       $this->testModel->saveTest($request, $test);
     }
 
-    public function getTest(TestGetRequest $request)
+    /**
+     * Returning test for make the test(with auth check)
+     *
+     * @param TestGetRequest $request
+     * @return TestResource
+     */
+    public function getTest(TestGetRequest $request): TestResource
     {
       $validatedRequest = $request->validated();
 
@@ -77,13 +106,25 @@ class TestController extends Controller
       return new TestResource($test);
     }
 
-    public function getTestByHash($hash)
+    /**
+     * Undocumented function
+     *
+     * @param String $hash
+     * @return TestResource
+     */
+    public function getTestByHash(String $hash): TestResource
     {
       if(!$this->testModel->isTestExist($hash)) return response('Not Found', 400);
 
       return new TestResource(Test::where('hash', $hash)->first());
     }
 
+    /**
+     * Returning all tests
+     *
+     * @param TestGetAllRequest $request
+     * @return void
+     */
     public function getTestAll(TestGetAllRequest $request)
     {
       $validatedRequest = $request->validated();
@@ -96,6 +137,12 @@ class TestController extends Controller
       return TestResource::collection($tests);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param TestGetQuestionRequest $request
+     * @return void
+     */
     public function getQuestions(TestGetQuestionRequest $request)
     {
       $validatedRequest = $request->validated();
@@ -111,7 +158,13 @@ class TestController extends Controller
       return QuestionResource::collection($questions);
     }
 
-    public function getQuestionsByHash($hash)
+    /**
+     * Undocumented function
+     *
+     * @param String $hash
+     * @return QuestionResource
+     */
+    public function getQuestionsByHash(String $hash): QuestionResource
     {
       if(!$this->testModel->isTestExist($hash)) return response('Not Found', 400);
       else $test = Test::where('hash', $hash)->first();
@@ -119,7 +172,13 @@ class TestController extends Controller
       return QuestionResource::collection($test->questions);
     }
 
-    public function uploadImage(Request $request)
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return TestResource
+     */
+    public function uploadImage(Request $request): TestResource
     {
       if(!$this->testModel->isTestExist($request['testHash'])) return response('Not Found', 400);
       else $test = Test::where('hash', $request['testHash'])->first();
@@ -129,6 +188,12 @@ class TestController extends Controller
       return new TestResource($test);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param TestChangeImageAlignRequest $request
+     * @return void
+     */
     public function changeImageAlign(TestChangeImageAlignRequest $request)
     {
       $validatedRequest = $request->validated();
@@ -138,6 +203,12 @@ class TestController extends Controller
       $mediaOption->save();
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param TestChangeImageSizeRequest $request
+     * @return void
+     */
     public function changeImageSize(TestChangeImageSizeRequest $request)
     {
       $validatedRequest = $request->validated();
@@ -145,6 +216,12 @@ class TestController extends Controller
       $this->testModel->changeImageSize($validatedRequest);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param TestDeleteImageRequest $request
+     * @return void
+     */
     public function deleteImage(TestDeleteImageRequest $request)
     {
       $validatedRequest = $request->validated();
@@ -154,7 +231,13 @@ class TestController extends Controller
       Media::findOrFail($validatedRequest['id'])->delete();
     }
 
-    public function checkDispatch(TestCheckDispatchRequest $request)
+    /**
+     * Undocumented function
+     *
+     * @param TestCheckDispatchRequest $request
+     * @return DispatchesTest
+     */
+    public function checkDispatch(TestCheckDispatchRequest $request): DispatchesTest
     {
       $validatedRequest = $request->validated();
 
@@ -169,7 +252,13 @@ class TestController extends Controller
       return $dispatche;
     }
 
-    public function checkPassword(TestCheckPasswordRequest $request) {
+    /**
+     * Undocumented function
+     *
+     * @param TestCheckPasswordRequest $request
+     * @return String
+     */
+    public function checkPassword(TestCheckPasswordRequest $request): String {
       $validatedRequest = $request->validated();
 
       $test = Test::where('hash', $validatedRequest['test_hash'])->first();

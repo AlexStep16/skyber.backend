@@ -17,6 +17,7 @@ class QuestionModel
     $question->video_link = $request['videoLink'];
     $question->index = $request['index'];
     $question->save();
+
     return $question->id;
   }
 
