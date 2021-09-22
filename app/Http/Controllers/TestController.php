@@ -3,17 +3,28 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+
 use App\Models\Test;
 use App\Models\Question;
-use App\Http\Resources\TestResource;
-use App\Http\Resources\QuestionResource;
-use App\Http\Resources\TestSettingResource;
 use App\Models\DispatchesTest;
 use App\Models\TestSetting;
 use App\Models\ImageOption;
+
+use App\Http\Resources\TestResource;
+use App\Http\Resources\QuestionResource;
+use App\Http\Resources\TestSettingResource;
+
 use App\Services\Tests\TestModel;
+
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
-use Illuminate\Support\Facades\Hash;
+
+use App\Http\Requests\Tests\{
+  TestCreateRequest, TestDeleteRequest, TestChangeImageAlignRequest,
+  TestChangeImageSizeRequest, TestCheckDispatchRequest, TestCheckPasswordRequest,
+  TestDeleteImageRequest, TestGetAllRequest, TestGetRequest,
+  TestGetQuestionRequest, TestSaveRequest
+};
 
 class TestController extends Controller
 {
@@ -22,33 +33,44 @@ class TestController extends Controller
       $this->testModel = $testModel;
     }
 
-    public function createTest(Request $request): TestResource
+    public function createTest(TestCreateRequest $request): TestResource
     {
-      return new TestResource($this->testModel->createTest($request));
+      $validatedRequest = $request->validated();
+
+      return new TestResource($this->testModel->createTest($validatedRequest));
     }
 
-    public function deleteTest(Request $request)
+    public function deleteTest(TestDeleteRequest $request)
     {
-      $this->testModel->deleteTest($request);
+      $validatedRequest = $request->validated();
+
+      if (!$this->testModel->isMyTest($validatedRequest, Test::findOrFail($validatedRequest['id']))) {
+        return response("It's Not Your", 401);
+      }
+      $this->testModel->deleteTest($validatedRequest);
     }
 
-    public function saveTest(Request $request)
+    public function saveTest(TestSaveRequest $request)
     {
-      $test = Test::where('hash', $request->testHash)->first();
+      $validatedRequest = $request->validated();
 
-      if(!$this->testModel->isMyTest($request, $test)) {
+      $test = Test::where('hash', $validatedRequest['testHash'])->first();
+
+      if(!$this->testModel->isMyTest($validatedRequest, $test)) {
         return response('Not identified', 401);
       }
 
       $this->testModel->saveTest($request, $test);
     }
 
-    public function getTest(Request $request)
+    public function getTest(TestGetRequest $request)
     {
-      if(!$this->testModel->isTestExist($request->hash)) {
+      $validatedRequest = $request->validated();
+
+      if(!$this->testModel->isTestExist($validatedRequest['hash'])) {
         return response('Not Found', 400);
       } else {
-        $test = Test::where('hash', $request->hash)->first();
+        $test = Test::where('hash', $validatedRequest['hash'])->first();
       }
       if(!$this->testModel->isMyTest($request, $test)) return response('Not identified', 401);
 
@@ -62,26 +84,28 @@ class TestController extends Controller
       return new TestResource(Test::where('hash', $hash)->first());
     }
 
-    public function getTestAll(Request $request)
+    public function getTestAll(TestGetAllRequest $request)
     {
-      $email = $request->user() ? $request->user()->email  : 'undefined';
+      $validatedRequest = $request->validated();
 
-      $tests = Test::where('email', $email)
-                   ->orWhere('ip', $request->fingerprint)
+      $tests = Test::where('email', $this->testModel->email)
+                   ->orWhere('ip', $validatedRequest['fingerprint'])
                    ->orderByDesc('created_at')
                    ->get();
 
       return TestResource::collection($tests);
     }
 
-    public function getQuestions(Request $request)
+    public function getQuestions(TestGetQuestionRequest $request)
     {
-      if ($this->testModel->isTestExist($request->hash)) {
-        $test = Test::where('hash', $request->hash)->first();
+      $validatedRequest = $request->validated();
+
+      if ($this->testModel->isTestExist($validatedRequest['hash'])) {
+        $test = Test::where('hash', $validatedRequest['hash'])->first();
         $questions = $test->questions;
       } else return response('Not Found', 400);
 
-      if (!$this->testModel->isMyTest($request, $test)) {
+      if (!$this->testModel->isMyTest($validatedRequest, $test)) {
         return response('Not identified', 401);
       }
       return QuestionResource::collection($questions);
@@ -97,52 +121,64 @@ class TestController extends Controller
 
     public function uploadImage(Request $request)
     {
-      if(!$this->testModel->isTestExist($hash)) return response('Not Found', 400);
-      else $test = Test::where('hash', $request->testHash)->first();
+      if(!$this->testModel->isTestExist($request['testHash'])) return response('Not Found', 400);
+      else $test = Test::where('hash', $request['testHash'])->first();
 
       $this->testModel->addMediaToTest($request, $test);
 
       return new TestResource($test);
     }
 
-    public function changeImageAlign(Request $request)
+    public function changeImageAlign(TestChangeImageAlignRequest $request)
     {
-      $mediaOption = ImageOption::where('media_id', $request->media_id)->first();
-      $mediaOption->alignment = $request->align;
+      $validatedRequest = $request->validated();
+
+      $mediaOption = ImageOption::where('media_id', $validatedRequest['media_id'])->first();
+      $mediaOption->alignment = $validatedRequest['align'];
       $mediaOption->save();
     }
 
-    public function changeImageSize(Request $request)
+    public function changeImageSize(TestChangeImageSizeRequest $request)
     {
-      $mediaOption = ImageOption::where('media_id', $request->id)->first();
-      $mediaOption->width = $request->width;
-      $mediaOption->height = $request->height;
-      $mediaOption->save();
+      $validatedRequest = $request->validated();
+
+      $this->testModel->changeImageSize($validatedRequest);
     }
 
-    public function deleteImage(Request $request)
+    public function deleteImage(TestDeleteImageRequest $request)
     {
-      if(!$this->testModel->isTestExist($request->testHash)) return response('Not Found', 400);
+      $validatedRequest = $request->validated();
 
-      Media::findOrFail($request->id)->delete();
+      if(!$this->testModel->isTestExist($validatedRequest['testHash'])) return response('Not Found', 400);
+
+      Media::findOrFail($validatedRequest['id'])->delete();
     }
 
-    public function checkDispatch(Request $request)
+    public function checkDispatch(TestCheckDispatchRequest $request)
     {
-      if(!$this->testModel->isTestExist($request->hash)) return response('Not Found', 404);
-      else $test = Test::where('hash', $request->hash)->first();
+      $validatedRequest = $request->validated();
 
-      $dispatche = $this->testModel->getDispatche($request, $test);
+      if (!$this->testModel->isTestExist($validatedRequest['hash'])) {
+        return response('Not Found', 404);
+      } else {
+        $test = Test::where('hash', $validatedRequest['hash'])->first();
+      }
+
+      $dispatche = $this->testModel->getDispatche($validatedRequest, $test);
 
       return $dispatche;
     }
 
-    public function checkPassword(Request $request) {
-      $test = Test::where('hash', $request->test_hash)->first();
+    public function checkPassword(TestCheckPasswordRequest $request) {
+      $validatedRequest = $request->validated();
+
+      $test = Test::where('hash', $validatedRequest['test_hash'])->first();
       $settings = $test->settings->first();
-      if(Hash::check($request->password, $settings->password)) {
+
+      if (Hash::check($validatedRequest['password'], $settings->password)) {
         return 'verified';
       };
+
       return 'not verified';
     }
 }

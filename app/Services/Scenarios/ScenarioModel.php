@@ -20,15 +20,15 @@ class ScenarioModel
 
   public function update($request, $scenario) {
     $scenario->update([
-      "name" => $request->name,
-      "header" => $request->header,
-      "description" => $request->description,
+      "name" => $request['name'],
+      "header" => $request['header'],
+      "description" => $request['description'],
     ]);
   }
 
   public function saveConditions($request)
   {
-    $scenarios = json_decode(json_encode($request->scenarios), false);
+    $scenarios = json_decode(json_encode($request['scenarios']), false);
 
     foreach ($scenarios as $scenario) {
       foreach ($scenario->conditions as $condition) {

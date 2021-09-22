@@ -3,14 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Models\Scenario;
-use App\Services\Scenarios\ScenarioModel;
 use App\Models\ScenarioCondition;
 use App\Models\Test;
-use App\Services\Tests\TestModel;
 use App\Models\ImageOption;
+
+use App\Services\Scenarios\ScenarioModel;
+use App\Services\Tests\TestModel;
+
 use App\Http\Resources\ScenarioResource;
+
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+
+use App\Http\Requests\Scenarios\{
+  ScenarioCreateRequest, ScenarioEditRequest, ScenarioSaveConditionsRequest,
+  ScenarioIsAccessRequest, ScenarioDeleteImageRequest, ScenarioChangeImageAlignRequest
+};
 
 class ScenarioController extends Controller
 {
@@ -20,9 +29,11 @@ class ScenarioController extends Controller
     $this->scenarioModel = $scenarioModel;
   }
 
-  public function create(Request $request)
+  public function create(ScenarioCreateRequest $request)
   {
-    $scenarioData = json_decode($request->scenario, false);
+    $validatedRequest = $request->validated();
+
+    $scenarioData = json_decode($validatedRequest['scenario'], false);
 
     if(!$this->testModel->isTestExist($scenarioData->testHash)) return response('Not Found', 400);
 
@@ -34,11 +45,13 @@ class ScenarioController extends Controller
     return new ScenarioResource($scenario);
   }
 
-  public function edit(Request $request)
+  public function edit(ScenarioEditRequest $request)
   {
-    $scenario = Scenario::findOrFail($request->id);
+    $validatedRequest = $request->validated();
 
-    $this->scenarioModel->update($request, $scenario);
+    $scenario = Scenario::findOrFail($validatedRequest['id']);
+
+    $this->scenarioModel->update($validatedRequest, $scenario);
   }
 
   public function delete($id)
@@ -63,14 +76,18 @@ class ScenarioController extends Controller
     return new ScenarioResource(Scenario::find($id));
   }
 
-  public function saveConditions(Request $request)
+  public function saveConditions(ScenarioSaveConditionsRequest $request)
   {
-    $this->scenarioModel->saveConditions($request);
+    $validatedRequest = $request->validated();
+
+    $this->scenarioModel->saveConditions($validatedRequest);
   }
 
-  public function isScenarioAccess(Request $request)
+  public function isScenarioAccess(ScenarioIsAccessRequest $request)
   {
-    $scenario = Scenario::find($request->scenario_id);
+    $validatedRequest = $request->validated();
+
+    $scenario = Scenario::find($validatedRequest['scenario_id']);
     if(is_null($scenario)) return response('Not Found', 400);
 
     $test = Test::find($scenario->test_id);
@@ -91,18 +108,22 @@ class ScenarioController extends Controller
     return new ScenarioResource($scenario);
   }
 
-  public function deleteImage(Request $request)
+  public function deleteImage(ScenarioDeleteImageRequest $request)
   {
-    $scenario = Scenario::findOrFail($request->scenarioId);
+    $validatedRequest = $request->validated();
+
+    $scenario = Scenario::findOrFail($validatedRequest['scenarioId']);
     if (is_null($scenario)) return response('Not Found', 400);
 
-    Media::findOrFail($request->id)->delete();
+    Media::findOrFail($validatedRequest['id'])->delete();
   }
 
-  public function changeImageAlign(Request $request)
+  public function changeImageAlign(ScenarioChangeImageAlignRequest $request)
   {
-    $mediaOption = ImageOption::where('media_id', $request->media_id)->first();
-    $mediaOption->alignment = $request->align;
+    $validatedRequest = $request->validated();
+
+    $mediaOption = ImageOption::where('media_id', $validatedRequest['media_id'])->first();
+    $mediaOption->alignment = $validatedRequest['align'];
     $mediaOption->save();
   }
 }

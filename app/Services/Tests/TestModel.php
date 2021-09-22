@@ -8,16 +8,20 @@ use App\Models\TestSetting;
 use App\Models\DispatchesTest;
 use App\Models\ImageOption;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class TestModel
 {
 
+  public function __construct() {
+    $this->email = Auth::user() ? Auth::user()->email : null;
+  }
+
   public function isMyTest($request, $test)
   {
-    $email = $request->user() ? $request->user()->email : '';
     if (
-      $test->email !== $email
-      && $test->ip !== $request->fingerprint
+      $test->email !== $this->email
+      && $test->ip !== $request['fingerprint']
       && $test->ip !== null
     ) {
       return false;
@@ -58,9 +62,8 @@ class TestModel
   public function createTest($request)
   {
     $test = new Test();
-    $test->name = $request->name ?? null;
-    $test->email = $request->user()->email ?? null;
-    $test->ip = $request->fingerprint;
+    $test->email = $this->email;
+    $test->ip = $request['fingerprint'];
     $test->status = 'draft';
     $test->hash = sha1(uniqid($test->id, true));
     $test->save();
@@ -74,11 +77,7 @@ class TestModel
 
   public function deleteTest($request)
   {
-    $test = Test::findOrFail($request->id);
-
-    if (!$this->isMyTest($request, $test)) {
-      return response("It's Not Your", 401);
-    }
+    $test = Test::findOrFail($request['id']);
 
     $test->clearMediaCollection();
 
@@ -138,14 +137,22 @@ class TestModel
 
   public function getDispatche($request, $test)
   {
-    $email = $request->user() ? $request->user()->email  : '';
+    $email = $this->email;
 
     $dispatche = DispatchesTest::where('test_id', $test->id)
-        ->where(function($query) use($email, $request) {
-          $query->where('fingerprint', $request->fingerprint);
+        ->where(function($query) use ($email, $request) {
+          $query->where('fingerprint', $request['fingerprint']);
           $query->orWhere('email', $email);
         })->first();
 
     return $dispatche;
+  }
+
+  public function changeImageSize($request)
+  {
+    $mediaOption = ImageOption::where('media_id', $request['id'])->first();
+    $mediaOption->width = $request['width'];
+    $mediaOption->height = $request['height'];
+    $mediaOption->save();
   }
 }

@@ -4,14 +4,19 @@ namespace App\Services\Answers;
 
 use App\Models\Answer;
 use App\Models\DispatchesTest;
+use Illuminate\Support\Facades\Auth;
 
 class AnswerModel
 {
+  public function __construct() {
+    $this->email = Auth::user() ? Auth::user()->email : null;
+  }
+
   public function store($request, $test)
   {
-    if (!$request->hasStatistic) return true;
+    if (!$request['hasStatistic']) return true;
 
-    $questionsArray = json_decode(json_encode($request->questions), FALSE);
+    $questionsArray = json_decode(json_encode($request['questions']), FALSE);
     foreach ($questionsArray as $question) {
       $answers = new Answer();
       $answers->question = $question->name;
@@ -28,9 +33,9 @@ class AnswerModel
   public function storeDispatch($request, $test)
   {
     DispatchesTest::create([
-      'email' => $request->user() ? $request->user()->email : null,
+      'email' => $this->email,
       'test_id' => $test->id,
-      'fingerprint' => $request->fingerprint,
+      'fingerprint' => $request['fingerprint'],
     ]);
 
     $test->count_sub = $test->count_sub + 1;

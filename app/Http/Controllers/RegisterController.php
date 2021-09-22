@@ -3,8 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Models\User;
+
 use App\Services\Registers\RegisterModel;
+
+use App\Http\Requests\Register\{
+  RegisterInvokeRequest, RegisterRestorePasswordRequest,
+  RegisterChangePasswordRequest,
+};
 
 class RegisterController extends Controller
 {
@@ -13,26 +20,32 @@ class RegisterController extends Controller
     $this->registerModel = $registerModel;
   }
 
-  public function __invoke(Request $request)
+  public function __invoke(RegisterInvokeRequest $request)
   {
-    $user = User::where('email', $request->email)->first();
-    if(!is_null($user)) return response('Email exist', 402);
+    $validatedRequest = $request->validated();
 
-    $this->registerModel->register($request);
+    $user = User::where('email', $validatedRequest['email'])->first();
+    if (!is_null($user)) return response('Email exist', 402);
+
+    $this->registerModel->register($validatedRequest);
   }
 
-  public function restorePassword(Request $request)
+  public function restorePassword(RegisterRestorePasswordRequest $request)
   {
-    $user = User::where('email', $request->email)->first();
+    $validatedRequest = $request->validated();
+
+    $user = User::where('email', $validatedRequest['email'])->first();
     if (!is_null($user)) {
-      $this->registerModel->restorePassword($request);
+      $this->registerModel->restorePassword($validatedRequest);
     } else {
       return response('Fail', 500);
     }
   }
 
-  public function changePassword(Request $request)
+  public function changePassword(RegisterChangePasswordRequest $request)
   {
-    $this->registerModel->changePassword($request);
+    $validatedRequest = $request->validated();
+
+    $this->registerModel->changePassword($validatedRequest);
   }
 }

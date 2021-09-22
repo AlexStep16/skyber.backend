@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+
 use App\Http\Resources\AnswerResource;
+
 use App\Models\Answer;
 use App\Models\Test;
-use App\Services\Tests\TestModel;
 use App\Models\DispatchesTest;
+
+use App\Services\Tests\TestModel;
 use App\Services\Answers\AnswerModel;
+
+use App\Http\Requests\Answers\AnswerStoreRequest;
 
 class AnswerController extends Controller
 {
@@ -18,17 +23,19 @@ class AnswerController extends Controller
     $this->answerModel = $answerModel;
   }
 
-  public function store(Request $request)
+  public function store(AnswerStoreRequest $request)
   {
-    if (!$this->testModel->isTestExist($request->hash)) return response('Not Found', 400);
-    else $test = Test::where('hash', $request->hash)->first();
+    $validatedRequest = $request->validated();
 
-    if (!$this->testModel->isMyTest($request, $test)) {
+    if (!$this->testModel->isTestExist($validatedRequest['hash'])) return response('Not Found', 400);
+    else $test = Test::where('hash', $validatedRequest['hash'])->first();
+
+    if (!$this->testModel->isMyTest($validatedRequest, $test)) {
       return response('Not identified', 401);
     }
 
-    $this->answerModel->storeDispatch($request, $test);
-    $this->answerModel->store($request, $test);
+    $this->answerModel->storeDispatch($validatedRequest, $test);
+    $this->answerModel->store($validatedRequest, $test);
   }
 
   public function getAnswers(Request $request, $id)

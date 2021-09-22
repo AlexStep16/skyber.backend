@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Question;
+
 use App\Http\Resources\QuestionResource;
+
+use App\Models\Question;
 use App\Models\ImageOption;
+
 use App\Services\Questions\QuestionModel;
+
+use App\Http\Requests\Questions\{QuestionCreateRequest, QuestionDeleteImageRequest};
 
 class QuestionController extends Controller
 {
@@ -15,22 +20,28 @@ class QuestionController extends Controller
     $this->questionModel = $questionModel;
   }
 
-  public function create(Request $request) {
-    return $this->questionModel->create($request);
+  public function create(QuestionCreateRequest $request) {
+    $validatedRequest = $request->validated();
+
+    return $this->questionModel->create($validatedRequest);
   }
 
-  public function delete($id) {
+  public function delete($id)
+  {
     $question = Question::findOrFail($id);
 
-    if(count($question->getMedia('questionImage')) != 0) {
+    if (count($question->getMedia('questionImage')) !== 0) {
       $mediaItems = $question->getMedia('questionImage');
       $mediaItems[0]->delete();
     }
+
     $question->delete();
   }
 
-  public function uploadImage(Request $request) {
-    $question = Question::findOrFail($request->id);
+  public function uploadImage(Request $request)
+  {
+    $question = Question::findOrFail($request['id']);
+
     if(is_null($question)) return response('Not Found', 400);
 
     $this->questionModel->addMediaToQuestion($request);
@@ -38,8 +49,11 @@ class QuestionController extends Controller
     return new QuestionResource($question);
   }
 
-  public function deleteImage(Request $request) {
-    $question = Question::find($request->id);
+  public function deleteImage(QuestionDeleteImageRequest $request)
+  {
+    $validatedRequest = $request->validated();
+
+    $question = Question::find($validatedRequest['id']);
 
     $mediaItems = $question->getMedia('questionImage');
     $mediaItems[0]->delete();
