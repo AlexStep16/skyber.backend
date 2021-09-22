@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 use App\Http\Resources\AnswerResource;
 
@@ -55,9 +56,9 @@ class AnswerController extends Controller
    *
    * @param Request $request
    * @param Int $id
-   * @return AnswerResource
+   * @return AnonymousResourceCollection
    */
-  public function getAnswers(Request $request, Int $id): AnswerResource
+  public function getAnswers(Request $request, Int $id): AnonymousResourceCollection
   {
     $answers = Answer::where('test_id', $id)->get();
 

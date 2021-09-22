@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 use App\Models\Test;
 use App\Models\Question;
@@ -120,12 +121,12 @@ class TestController extends Controller
     }
 
     /**
-     * Returning all tests
+     * Undocumented function
      *
      * @param TestGetAllRequest $request
-     * @return void
+     * @return AnonymousResourceCollection
      */
-    public function getTestAll(TestGetAllRequest $request)
+    public function getTestAll(TestGetAllRequest $request): AnonymousResourceCollection
     {
       $validatedRequest = $request->validated();
 
@@ -141,9 +142,9 @@ class TestController extends Controller
      * Undocumented function
      *
      * @param TestGetQuestionRequest $request
-     * @return void
+     * @return AnonymousResourceCollection
      */
-    public function getQuestions(TestGetQuestionRequest $request)
+    public function getQuestions(TestGetQuestionRequest $request): AnonymousResourceCollection
     {
       $validatedRequest = $request->validated();
 
@@ -162,9 +163,9 @@ class TestController extends Controller
      * Undocumented function
      *
      * @param String $hash
-     * @return QuestionResource
+     * @return AnonymousResourceCollection
      */
-    public function getQuestionsByHash(String $hash): QuestionResource
+    public function getQuestionsByHash(String $hash): AnonymousResourceCollection
     {
       if(!$this->testModel->isTestExist($hash)) return response('Not Found', 400);
       else $test = Test::where('hash', $hash)->first();

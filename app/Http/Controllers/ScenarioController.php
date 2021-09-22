@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 use App\Models\Scenario;
 use App\Models\ScenarioCondition;
@@ -90,9 +91,9 @@ class ScenarioController extends Controller
    * Undocumented function
    *
    * @param String $testHash
-   * @return ScenarioResource
+   * @return AnonymousResourceCollection
    */
-  public function getByTestHash(String $testHash): ScenarioResource
+  public function getByTestHash(String $testHash): AnonymousResourceCollection
   {
     $test = Test::where('hash', $testHash)->first();
 
