@@ -10,7 +10,7 @@ class ScenarioModel
 {
 
   public function create($testId, $scenarioData) {
-    Scenario::create([
+    return Scenario::create([
       "test_id" => $testId,
       "name" => $scenarioData->name ?? '',
       "header" => $scenarioData->header ?? '',

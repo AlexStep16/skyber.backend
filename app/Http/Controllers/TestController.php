@@ -236,9 +236,9 @@ class TestController extends Controller
      * Undocumented function
      *
      * @param TestCheckDispatchRequest $request
-     * @return DispatchesTest
+     * @return void
      */
-    public function checkDispatch(TestCheckDispatchRequest $request): DispatchesTest
+    public function checkDispatch(TestCheckDispatchRequest $request)
     {
       $validatedRequest = $request->validated();
 

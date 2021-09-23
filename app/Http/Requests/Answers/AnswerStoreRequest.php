@@ -26,7 +26,7 @@ class AnswerStoreRequest extends FormRequest
       return [
         'hash' => 'required|string',
         'fingerprint' => 'required|string',
-        'has_statistic' => 'string|nullable',
+        'hasStatistic' => 'boolean|nullable',
         'questions' => 'array',
       ];
     }

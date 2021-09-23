@@ -50,7 +50,7 @@ class ScenarioController extends Controller
 
     if(!$this->testModel->isTestExist($scenarioData->testHash)) return response('Not Found', 400);
 
-    $this->scenarioModel->create(
+    $scenario = $this->scenarioModel->create(
       Test::where('hash', $scenarioData->testHash)->first()->id,
       $scenarioData
     );
