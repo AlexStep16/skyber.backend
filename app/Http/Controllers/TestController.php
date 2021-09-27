@@ -130,10 +130,16 @@ class TestController extends Controller
     {
       $validatedRequest = $request->validated();
 
-      $tests = Test::where('email', $this->testModel->email)
-                   ->orWhere('ip', $validatedRequest['fingerprint'])
+      $tests = Test::where('ip', $validatedRequest['fingerprint'])
                    ->orderByDesc('created_at')
                    ->get();
+
+      if ($this->testModel->email !== null && strlen($this->testModel->email) >= 5) {
+        $tests = Test::where('email', $this->testModel->email)
+                  ->orWhere('ip', $validatedRequest['fingerprint'])
+                  ->orderByDesc('created_at')
+                  ->get();
+      }
 
       return TestResource::collection($tests);
     }
