@@ -42,7 +42,7 @@ class ScenarioController extends Controller
    * @param ScenarioCreateRequest $request
    * @return ScenarioResource
    */
-  public function create(ScenarioCreateRequest $request): ScenarioResource
+  public function create(ScenarioCreateRequest $request)
   {
     $validatedRequest = $request->validated();
 
@@ -93,7 +93,7 @@ class ScenarioController extends Controller
    * @param String $testHash
    * @return AnonymousResourceCollection
    */
-  public function getByTestHash(String $testHash): AnonymousResourceCollection
+  public function getByTestHash(String $testHash)
   {
     $test = Test::where('hash', $testHash)->first();
 
@@ -153,7 +153,7 @@ class ScenarioController extends Controller
    * @param Request $request
    * @return ScenarioResource
    */
-  public function uploadImage(Request $request): ScenarioResource
+  public function uploadImage(Request $request)
   {
     $scenario = Scenario::findOrFail($request->scenarioId);
     if (is_null($scenario)) return response('Not Found', 400);

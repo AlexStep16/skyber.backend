@@ -93,7 +93,7 @@ class TestController extends Controller
      * @param TestGetRequest $request
      * @return TestResource
      */
-    public function getTest(TestGetRequest $request): TestResource
+    public function getTest(TestGetRequest $request)
     {
       $validatedRequest = $request->validated();
 
@@ -113,7 +113,7 @@ class TestController extends Controller
      * @param String $hash
      * @return TestResource
      */
-    public function getTestByHash(String $hash): TestResource
+    public function getTestByHash(String $hash)
     {
       if(!$this->testModel->isTestExist($hash)) return response('Not Found', 400);
 
@@ -150,7 +150,7 @@ class TestController extends Controller
      * @param TestGetQuestionRequest $request
      * @return AnonymousResourceCollection
      */
-    public function getQuestions(TestGetQuestionRequest $request): AnonymousResourceCollection
+    public function getQuestions(TestGetQuestionRequest $request)
     {
       $validatedRequest = $request->validated();
 
@@ -171,7 +171,7 @@ class TestController extends Controller
      * @param String $hash
      * @return AnonymousResourceCollection
      */
-    public function getQuestionsByHash(String $hash): AnonymousResourceCollection
+    public function getQuestionsByHash(String $hash)
     {
       if(!$this->testModel->isTestExist($hash)) return response('Not Found', 400);
       else $test = Test::where('hash', $hash)->first();
@@ -185,7 +185,7 @@ class TestController extends Controller
      * @param Request $request
      * @return TestResource
      */
-    public function uploadImage(Request $request): TestResource
+    public function uploadImage(Request $request)
     {
       if(!$this->testModel->isTestExist($request['testHash'])) return response('Not Found', 400);
       else $test = Test::where('hash', $request['testHash'])->first();
@@ -265,7 +265,8 @@ class TestController extends Controller
      * @param TestCheckPasswordRequest $request
      * @return String
      */
-    public function checkPassword(TestCheckPasswordRequest $request): String {
+    public function checkPassword(TestCheckPasswordRequest $request): String
+    {
       $validatedRequest = $request->validated();
 
       $test = Test::where('hash', $validatedRequest['test_hash'])->first();

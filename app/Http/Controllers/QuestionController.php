@@ -61,7 +61,7 @@ class QuestionController extends Controller
    * @param Request $request
    * @return QuestionResource
    */
-  public function uploadImage(Request $request): QuestionResource
+  public function uploadImage(Request $request)
   {
     $question = Question::findOrFail($request['id']);
 
