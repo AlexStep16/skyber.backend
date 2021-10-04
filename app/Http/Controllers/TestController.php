@@ -102,7 +102,7 @@ class TestController extends Controller
       } else {
         $test = Test::where('hash', $validatedRequest['hash'])->first();
       }
-      if(!$this->testModel->isMyTest($request, $test)) return response('Not identified', 401);
+      if(!$this->testModel->isMyTest($validatedRequest, $test)) return response('Not identified', 401);
 
       return new TestResource($test);
     }

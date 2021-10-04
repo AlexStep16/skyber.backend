@@ -19,13 +19,19 @@ class TestModel
 
   public function isMyTest($request, $test)
   {
-    if (
-      $test->email !== $this->email
-      && $test->ip !== $request['fingerprint']
-      && $test->ip !== null
-    ) {
-      return false;
+    if ($test->email === null) {
+      if ($test->ip !== $request['fingerprint']) {
+        return false;
+      }
+    } else {
+      if (
+        $test->email !== $this->email
+        && $test->ip !== $request['fingerprint']
+      ) {
+        return false;
+      }
     }
+
     return true;
   }
 
