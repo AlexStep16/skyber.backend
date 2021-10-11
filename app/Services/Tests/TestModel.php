@@ -127,10 +127,8 @@ class TestModel
       if (
         $media = $test->addMediaFromRequest("testImage{$i}")
             ->usingFileName(rand() . $i . '.' . $request["imageType{$i}"])
-            ->addCustomHeaders(
-              ['ACL' => 'public-read']
-            )
-            ->toMediaCollection('testImage', 's3')
+
+            ->toMediaCollection('testImage', 'local')
       ) {
         $id = $media->id;
         $mediaOption = new ImageOption();

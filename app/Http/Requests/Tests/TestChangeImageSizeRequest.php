@@ -24,9 +24,9 @@ class TestChangeImageSizeRequest extends FormRequest
     public function rules()
     {
       return [
-        'media_id' => 'required|numeric',
+        'id' => 'required|numeric',
         'width' => 'required',
-        'height' => 'required',
+        'height' => 'numeric|nullable',
       ];
     }
 }
