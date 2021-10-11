@@ -67,7 +67,7 @@ class QuestionController extends Controller
 
     if(is_null($question)) return response('Not Found', 400);
 
-    $this->questionModel->addMediaToQuestion($request);
+    $this->questionModel->addMediaToQuestion($request, $question);
 
     return new QuestionResource($question);
   }

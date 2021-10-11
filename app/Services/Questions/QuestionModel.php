@@ -29,7 +29,7 @@ class QuestionModel
     $mediaOption->save();
   }
 
-  public function addMediaToQuestion($request)
+  public function addMediaToQuestion($request, $question)
   {
     for($i = 0; $i < $request['countImages']; $i++) {
       if (
