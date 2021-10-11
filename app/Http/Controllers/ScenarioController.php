@@ -158,7 +158,7 @@ class ScenarioController extends Controller
     $scenario = Scenario::findOrFail($request->scenarioId);
     if (is_null($scenario)) return response('Not Found', 400);
 
-    $this->scenarioModel->addMediaToScenario($request);
+    $this->scenarioModel->addMediaToScenario($request, $scenario);
 
     return new ScenarioResource($scenario);
   }

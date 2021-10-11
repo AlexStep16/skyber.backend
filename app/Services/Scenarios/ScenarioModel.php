@@ -51,7 +51,7 @@ class ScenarioModel
     }
   }
 
-  public function addMediaToScenario($request)
+  public function addMediaToScenario($request, $scenario)
   {
     for($i = 0; $i < $request->countImages; $i++) {
       if (
