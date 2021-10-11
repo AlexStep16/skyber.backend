@@ -44,11 +44,9 @@ class AnswerController extends Controller
     else $test = Test::where('hash', $validatedRequest['hash'])->first();
 
     if (!$this->testModel->isMyTest($validatedRequest, $test)) {
-      return response('Not identified', 401);
+      $this->answerModel->storeDispatch($validatedRequest, $test);
+      $this->answerModel->store($validatedRequest, $test);
     }
-
-    $this->answerModel->storeDispatch($validatedRequest, $test);
-    $this->answerModel->store($validatedRequest, $test);
   }
 
   /**
