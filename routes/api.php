@@ -76,6 +76,10 @@ Route::delete('scenario/delete/{id}', 'ScenarioController@delete');
 Route::post('scenarios/conditions/save', 'ScenarioController@saveConditions');
 Route::post('scenarios/check/access', 'ScenarioController@isScenarioAccess');
 
+Route::get('friends', 'FriendsController@index');
+Route::post('friends/login', 'FriendsController@login');
+Route::post('friends/change', 'FriendsController@changeTiming');
+
 Route::post('settings/save', 'SettingsController@save');
 
 Route::post('answers/send', 'AnswerController@store');
