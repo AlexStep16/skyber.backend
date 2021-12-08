@@ -26,7 +26,11 @@ class FriendsController extends Controller
 
     public function changeTiming(Request $request) {
       $user = FriendsUser::where('uid', $request['uid'])->first();
-      $user->friends_timing_id = $request['timing_id'];
+      if ($user->friends_timing_id === $request['timing_id']) {
+        $user->friends_timing_id = NULL;
+      } else {
+        $user->friends_timing_id = $request['timing_id'];
+      }
       $user->save();
     }
 }
