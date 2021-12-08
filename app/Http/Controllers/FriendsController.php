@@ -13,7 +13,7 @@ use App\Http\Resources\FriendsTimingResource;
 class FriendsController extends Controller
 {
     public function index() {
-      return FriendsTimingResource::collection(FriendsTiming::all());
+      return FriendsTimingResource::collection(FriendsTiming::all()->orderby('id'));
     }
 
     public function login(Request $request) {
