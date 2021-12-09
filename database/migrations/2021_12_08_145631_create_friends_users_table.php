@@ -19,6 +19,7 @@ class CreateFriendsUsersTable extends Migration
             $table->string('avatar');
             $table->string('uid');
             $table->integer('friends_timing_id')->nullable();
+            $table->string('direction');
             $table->timestamps();
         });
     }
